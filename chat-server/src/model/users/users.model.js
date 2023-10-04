@@ -18,11 +18,7 @@ const registerUser = async (user) => {
   try {
     const newUser = new users(user)
     await newUser.save()
-    const data = {
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-    }
+    const data = { ...user }
     return {
       data,
       success: true,

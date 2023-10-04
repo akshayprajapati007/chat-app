@@ -23,7 +23,7 @@ const otpMailSender = (to, otp) => {
 
   transporter.sendMail(mailOptions, (err, res) => {
     if (err) {
-      console.log("here", err)
+      console.log("mail error", err)
       return false
     }
     return true

@@ -1,4 +1,5 @@
 import { Box, Typography } from "@mui/material"
+import { useState } from "react"
 import * as Yup from "yup"
 import { Formik, Form } from "formik"
 import TextField from "components/TextField"
@@ -11,8 +12,9 @@ import CustomErrorMessage from "components/CustomErrorMessage"
 import AuthLayout from "components/AuthLayout"
 import { Link, useNavigate } from "react-router-dom"
 import { AppRoutings } from "utility/enums/app-routings"
-import { useState } from "react"
 import { toast } from "react-toastify"
+import { useAppDispatch } from "hooks/storeHook"
+import { changeUserDetails } from "store/slices/userSlice"
 
 const useStyles = makeStyles((theme: Theme) => ({
   formWrapper: {
@@ -76,6 +78,7 @@ const validationSchema = Yup.object({
 const SignIn = () => {
   const classes = useStyles()
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const [isSigning, setIsSigning] = useState(false)
 
   const initialValues: ISignInValues = {
@@ -88,6 +91,7 @@ const SignIn = () => {
     try {
       const res = await AuthService.signIn(values)
       AuthService.setAuthToken(res.data.token)
+      dispatch(changeUserDetails(res.data.data))
       navigate(AppRoutings.Home)
     } catch (e: any) {
       const errorMessage = e.response.data.error

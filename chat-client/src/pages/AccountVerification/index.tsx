@@ -147,7 +147,7 @@ const AccountVerification = () => {
       })
       if (res.data.success) {
         AuthService.setAuthToken(res.data.token)
-        navigate(AppRoutings.Home)
+        window.location.href = `${window.location.protocol}//${window.location.host}`
       }
       setIsVerifying(false)
     } catch (e) {

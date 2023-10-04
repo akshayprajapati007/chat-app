@@ -17,7 +17,8 @@ const sendOTP = async (email) => {
     expireIn: new Date().getTime() + 300 * 1000,
   }
 
-  await saveOTP(otpInfo)
+  const res = await saveOTP(otpInfo)
+  console.log("here otp", res)
   otpMailSender(email, otp)
 }
 
@@ -31,7 +32,7 @@ const handleOTP = async (req, res) => {
     })
   } catch (error) {
     return res.status(500).json({
-      error: "Something went wrong!",
+      error,
     })
   }
 }
@@ -55,14 +56,22 @@ const validateOTP = async (req, res) => {
       if (response.otp === Number(otp)) {
         await removeOTP(email)
         const user = await verifyUserEmail(email)
+        const { firstName, lastName, profilePicture } = user
 
         const token = generateToken({
           email,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          firstName,
+          lastName,
         })
+
         return res.status(200).json({
           token,
+          data: {
+            email,
+            firstName,
+            lastName,
+            profilePicture,
+          },
           success: true,
           message: "Verification code verified successfully!",
         })

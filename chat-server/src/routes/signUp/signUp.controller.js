@@ -20,11 +20,20 @@ const handleSignUp = async (req, res) => {
     })
   }
 
-  const hasPassword = await generateHashPassword(password)
-  req.body.password = hasPassword
-  const user = await registerUser({ isEmailVerified: false, ...req.body })
-  const response = await sendOTP(email)
-  return res.status(201).json(user)
+  try {
+    const hasPassword = await generateHashPassword(password)
+    req.body.password = hasPassword
+    const userDetails = {
+      profileImage: "",
+      isEmailVerified: false,
+      ...req.body,
+    }
+    const user = await registerUser({ ...userDetails })
+    await sendOTP(email)
+    return res.status(201).json(user)
+  } catch (error) {
+    return res.status(500).json({ error })
+  }
 }
 
 module.exports = {

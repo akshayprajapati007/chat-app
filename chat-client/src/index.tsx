@@ -1,16 +1,27 @@
 import ReactDOM from "react-dom/client"
 import "./index.css"
+import { Suspense } from "react"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import { BrowserRouter as Router } from "react-router-dom"
 import CustomToastContainer from "components/CustomToastContainer"
+import TopLoadingBar from "components/TopLoadingBar"
+import store, { persistor } from "store/store"
+import { Provider } from "react-redux"
+import { PersistGate } from "redux-persist/integration/react"
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 root.render(
   <>
     <CustomToastContainer />
     <Router>
-      <App />
+      <Suspense fallback={<TopLoadingBar />}>
+        <Provider store={store}>
+          <PersistGate loading={<TopLoadingBar />} persistor={persistor}>
+            <App />
+          </PersistGate>
+        </Provider>
+      </Suspense>
     </Router>
   </>
 )

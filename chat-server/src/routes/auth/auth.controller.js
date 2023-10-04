@@ -28,15 +28,22 @@ const handleLogin = async (req, res) => {
     })
   }
 
+  const { firstName, lastName, profilePicture } = user
   const token = generateToken({
-    email: user.email,
-    firstName: user.firstName,
-    lastName: user.lastName,
+    email,
+    firstName,
+    lastName,
   })
 
   return res.status(200).json({
     token,
     success: true,
+    data: {
+      email,
+      firstName,
+      lastName,
+      profilePicture,
+    },
   })
 }
 
