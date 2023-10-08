@@ -1,5 +1,5 @@
 import { useState, useRef } from "react"
-import { Box, Grid, Avatar, IconButton } from "@mui/material"
+import { Box, Grid, Avatar, IconButton, CircularProgress } from "@mui/material"
 import { Theme } from "@mui/material/styles"
 import EditRoundedIcon from "@mui/icons-material/EditRounded"
 import { makeStyles } from "@mui/styles"
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       transform: "translateX(0%)",
       backgroundColor: theme.palette.primary.main,
       border: "2px solid #fff",
-      "&:hover": {
+      "&:hover,&:disabled": {
         backgroundColor: theme.palette.primary.main,
       },
       "& svg": {
@@ -59,6 +59,9 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontSize: "15px",
       },
     },
+  },
+  profileImageLoader: {
+    color: "#fff",
   },
   fieldWrapper: {
     display: "flex",
@@ -196,7 +199,14 @@ const Profile = () => {
                       disabled={isUpdatingProfileImage}
                       onClick={handleProfileEditClick}
                     >
-                      <EditRoundedIcon />
+                      {isUpdatingProfileImage ? (
+                        <CircularProgress
+                          size={15}
+                          className={classes.profileImageLoader}
+                        />
+                      ) : (
+                        <EditRoundedIcon />
+                      )}
                     </IconButton>
                     <input
                       hidden
@@ -241,18 +251,20 @@ const Profile = () => {
                       <CustomErrorMessage name="email" />
                     </Box>
                   </Grid>
-                  <Grid item xs={12}>
-                    <Box width="200px" pt={2}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        type="submit"
-                        disabled={isUpdatingProfile}
-                        isLoading={isUpdatingProfile}
-                      >
-                        Update Profile
-                      </Button>
-                    </Box>
+                  <Grid container item xs={12}>
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
+                      <Box pt={2}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          type="submit"
+                          disabled={isUpdatingProfile}
+                          isLoading={isUpdatingProfile}
+                        >
+                          Update Profile
+                        </Button>
+                      </Box>
+                    </Grid>
                   </Grid>
                 </Grid>
               </Box>
