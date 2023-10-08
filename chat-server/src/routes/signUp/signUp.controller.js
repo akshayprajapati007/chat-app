@@ -30,7 +30,12 @@ const handleSignUp = async (req, res) => {
     }
     const user = await registerUser({ ...userDetails })
     await sendOTP(email)
-    return res.status(201).json(user)
+    const response = {
+      data: user,
+      success: true,
+      message: "Account created successfully",
+    }
+    return res.status(201).json(response)
   } catch (error) {
     return res.status(500).json({ error })
   }

@@ -17,9 +17,8 @@ const usersSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  profilePicture: {
+  profileImage: {
     type: String,
-    required: true,
   },
   isEmailVerified: {
     type: Boolean,

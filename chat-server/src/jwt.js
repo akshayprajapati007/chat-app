@@ -3,6 +3,7 @@ const { sign, verify } = require("jsonwebtoken")
 const {
   JWT_EXPIRATION_TIME,
   AUTHORIZATION_HEADER,
+  EMAIL_HEADER,
 } = require("./utility/constants.js")
 const { JWT_TOKEN_SECRET } = require("./configs")
 
@@ -24,6 +25,7 @@ const validateToken = (req, res, next) => {
   try {
     const isValidToken = verify(token, JWT_TOKEN_SECRET)
     if (isValidToken) {
+      req.headers[EMAIL_HEADER] = isValidToken.email
       return next()
     }
   } catch (err) {
