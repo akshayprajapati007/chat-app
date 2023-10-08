@@ -14,7 +14,7 @@ app.use(
     origin: CLIENT_URL,
   })
 )
-app.use(express.json())
+app.use(express.json({ limit: "10mb" }))
 
 app.use(authRouter)
 app.use(otpRouter)
