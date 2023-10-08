@@ -9,7 +9,7 @@ import { ISIgnInPayload, ISignInResponse } from "utility/interfaces/sign-in"
 import Cookies from "js-cookie"
 import { TOKEN_NAME } from "utility/constants"
 import { AppRoutings } from "utility/enums/app-routings"
-import httpClient from "./base-service"
+import httpClient from "services/base-service"
 
 const getAuthToken = (): string | undefined => Cookies.get(TOKEN_NAME)
 

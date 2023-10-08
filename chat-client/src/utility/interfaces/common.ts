@@ -4,3 +4,8 @@ export interface IUserDetails {
   email: string
   profileImage: string
 }
+
+export interface INavigator {
+  heading: string
+  link: string
+}

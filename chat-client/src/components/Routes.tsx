@@ -7,6 +7,7 @@ import { AppRoutings } from "utility/enums/app-routings"
 
 const SignIn = lazy(() => import("pages/SignIn"))
 const Home = lazy(() => import("pages/Home"))
+const Profile = lazy(() => import("pages/Profile"))
 const SignUp = lazy(() => import("pages/SignUp"))
 const AccountVerification = lazy(() => import("pages/AccountVerification"))
 
@@ -29,6 +30,11 @@ const RoutesList = [
   {
     path: AppRoutings.Home,
     component: <Home />,
+    isProtectedRoute: true,
+  },
+  {
+    path: AppRoutings.Profile,
+    component: <Profile />,
     isProtectedRoute: true,
   },
 ]
@@ -59,10 +65,7 @@ const AllRoutes = () => {
             )
           }
         )}
-        <Route
-          path="*"
-          element={<Navigate replace to={AppRoutings.SignIn} />}
-        />
+        <Route path="*" element={<Navigate replace to={AppRoutings.Home} />} />
       </Routes>
     </Layout>
   )

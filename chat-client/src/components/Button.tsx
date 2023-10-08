@@ -8,6 +8,7 @@ import { makeStyles } from "@mui/styles"
 const useStyles = makeStyles({
   button: {
     width: "100%",
+    padding: "8px 16px !important",
   },
 })
 

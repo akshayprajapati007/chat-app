@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosResponse } from "axios"
 import { BASE_URL } from "configs"
 import { HttpStatusCodes } from "utility/enums/http-status-codes"
 import authService from "./auth-service"
+import { toast } from "react-toastify"
 
 declare module "axios" {
   export interface AxiosRequestConfig {
@@ -42,6 +43,9 @@ axios.interceptors.response.use(
       case HttpStatusCodes.BadRequest:
       case HttpStatusCodes.ConflictError:
       case HttpStatusCodes.InternalServerError:
+        break
+      case HttpStatusCodes.NotFound:
+        toast.error("Service not found")
         break
       default:
     }

@@ -88,6 +88,9 @@ export const theme = createTheme({
           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
             borderColor: PRIMARY_MAIN,
           },
+          "&.Mui-disabled .MuiOutlinedInput-notchedOutline": {
+            borderColor: "transparent",
+          },
         },
         notchedOutline: {
           borderColor: "#f6f6f6",
