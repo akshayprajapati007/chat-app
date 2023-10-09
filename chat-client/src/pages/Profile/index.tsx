@@ -20,6 +20,7 @@ import { INavigator } from "utility/interfaces/common"
 import NavigatorTree from "components/NavigatorTree"
 import { ALLOWED_IMAGE_EXTENSIONS } from "utility/constants"
 import { fileToBase64 } from "utility/constants/helper"
+import Layout from "components/Layout"
 
 const useStyles = makeStyles((theme: Theme) => ({
   formWrapper: {
@@ -83,6 +84,7 @@ const Profile = () => {
     (state: RootState) => state.user
   )
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
+  const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [isUpdatingProfileImage, setIsUpdatingProfileImage] = useState(false)
 
   const initialValues: IProfileValues = {
@@ -152,9 +154,15 @@ const Profile = () => {
   }
 
   const handleProfileUpdateSubmit = (values: IProfileValues) => {
-    const isFieldUpdates = !isEqual(initialValues, values)
-    if (isFieldUpdates) {
-      handleProfileUpdate(values)
+    if (isEditingProfile) {
+      const isFieldUpdates = !isEqual(initialValues, values)
+      if (isFieldUpdates) {
+        handleProfileUpdate(values)
+      } else {
+        setIsEditingProfile(false)
+      }
+    } else {
+      setIsEditingProfile(true)
     }
   }
 
@@ -171,11 +179,12 @@ const Profile = () => {
       toast.error(e.response.data.error)
     } finally {
       setIsUpdatingProfile(false)
+      setIsEditingProfile(false)
     }
   }
 
   return (
-    <>
+    <Layout>
       <NavigatorTree navigators={navigators} />
       <Box pt={20}>
         <Formik
@@ -211,7 +220,7 @@ const Profile = () => {
                     <input
                       hidden
                       type="file"
-                      accept="image/png, image/jpeg"
+                      accept="image/png, image/jpeg, image/gif"
                       ref={profileImageRef}
                       disabled={isUpdatingProfileImage}
                       onChange={handleImageSelect}
@@ -224,6 +233,7 @@ const Profile = () => {
                       <TextField
                         name="firstName"
                         placeholder="First name"
+                        disabled={!isEditingProfile}
                         value={values.firstName}
                         onChange={handleChange}
                       />
@@ -235,6 +245,7 @@ const Profile = () => {
                       <TextField
                         name="lastName"
                         placeholder="Last name"
+                        disabled={!isEditingProfile}
                         value={values.lastName}
                         onChange={handleChange}
                       />
@@ -261,7 +272,7 @@ const Profile = () => {
                           disabled={isUpdatingProfile}
                           isLoading={isUpdatingProfile}
                         >
-                          Update Profile
+                          {isEditingProfile ? 'Update Profile' : 'Edit Profile'}
                         </Button>
                       </Box>
                     </Grid>
@@ -272,7 +283,7 @@ const Profile = () => {
           )}
         </Formik>
       </Box>
-    </>
+    </Layout>
   )
 }
 

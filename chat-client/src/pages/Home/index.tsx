@@ -1,7 +1,7 @@
-import { Box } from "@mui/material"
+import Layout from "components/Layout"
 
 const Home = () => {
-  return <Box>Home</Box>
+  return <Layout>Home</Layout>
 }
 
 export default Home

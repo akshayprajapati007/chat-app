@@ -2,7 +2,6 @@ import { lazy } from "react"
 import { Routes, Route, Navigate } from "react-router-dom"
 import PublicRoute from "components/PublicRoute"
 import ProtectedRoute from "components/ProtectedRoute"
-import Layout from "components/Layout"
 import { AppRoutings } from "utility/enums/app-routings"
 
 const SignIn = lazy(() => import("pages/SignIn"))
@@ -41,7 +40,7 @@ const RoutesList = [
 
 const AllRoutes = () => {
   return (
-    <Layout>
+    <>
       <Routes>
         {RoutesList.filter((route) => !route.isProtectedRoute).map(
           ({ path, component }, key) => {
@@ -67,7 +66,7 @@ const AllRoutes = () => {
         )}
         <Route path="*" element={<Navigate replace to={AppRoutings.Home} />} />
       </Routes>
-    </Layout>
+    </>
   )
 }
 
