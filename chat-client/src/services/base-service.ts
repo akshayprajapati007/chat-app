@@ -42,7 +42,9 @@ axios.interceptors.response.use(
       case HttpStatusCodes.Unauthorized:
       case HttpStatusCodes.BadRequest:
       case HttpStatusCodes.ConflictError:
+        break
       case HttpStatusCodes.InternalServerError:
+        toast.error("Something went wrong")
         break
       case HttpStatusCodes.NotFound:
         toast.error("Service not found")

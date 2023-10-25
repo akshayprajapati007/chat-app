@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios"
-import { UPDATE_PROFILE_ENDPOINT, UPDATE_PROFILE_IMAGE } from "configs"
+import { UPDATE_PROFILE_ENDPOINT, UPDATE_PROFILE_IMAGE_ENDPOINT } from "configs"
 import httpClient from "services/base-service"
 import {
   IProfilePayload,
@@ -17,7 +17,7 @@ const updateProfile = async (
 const updateProfileImage = async (
   payload: IProfileImagePayload
 ): Promise<AxiosResponse<IProfileImageResponse>> => {
-  return await httpClient.post(UPDATE_PROFILE_IMAGE, payload)
+  return await httpClient.post(UPDATE_PROFILE_IMAGE_ENDPOINT, payload)
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export

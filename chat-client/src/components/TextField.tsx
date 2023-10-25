@@ -26,12 +26,12 @@ const TextField: React.FC<ITextFieldProps> = ({
     setIsPasswordVisible((isPasswordVisible: boolean) => !isPasswordVisible)
   }
 
-  return (
+  return !isPasswordField ? (
+    <StyledTextField {...props} />
+  ) : (
     <StyledTextField
       {...props}
-      type={
-        isPasswordField ? (isPasswordVisible ? "text" : "password") : "text"
-      }
+      type={isPasswordVisible ? "text" : "password"}
       InputProps={{
         endAdornment: isPasswordField ? (
           <InputAdornment

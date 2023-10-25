@@ -3,7 +3,9 @@ export enum AppRoutings {
   SignIn = "/sign-in",
   SignOut = "/sign-out",
   Home = "/",
-  Chat = "/chat",
+  Chats = "/chats",
   Profile = "/profile",
+  User = "/user",
+  UserId = "/user/:id",
   AccountVerification = "/account-verification",
 }

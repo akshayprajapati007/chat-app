@@ -7,6 +7,7 @@ import { AppRoutings } from "utility/enums/app-routings"
 const SignIn = lazy(() => import("pages/SignIn"))
 const Home = lazy(() => import("pages/Home"))
 const Profile = lazy(() => import("pages/Profile"))
+const Chats = lazy(() => import("pages/Chats"))
 const SignUp = lazy(() => import("pages/SignUp"))
 const AccountVerification = lazy(() => import("pages/AccountVerification"))
 
@@ -34,6 +35,11 @@ const RoutesList = [
   {
     path: AppRoutings.Profile,
     component: <Profile />,
+    isProtectedRoute: true,
+  },
+  {
+    path: AppRoutings.Chats,
+    component: <Chats />,
     isProtectedRoute: true,
   },
 ]

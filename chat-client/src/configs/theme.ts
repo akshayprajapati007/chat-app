@@ -24,12 +24,6 @@ export const theme = createTheme({
   // Typography
   typography: {
     fontFamily: MONTSERRAT_FONT,
-    h1: { fontSize: "4rem" },
-    h2: { fontSize: "3rem" },
-    h3: { fontSize: "2.5rem" },
-    h4: { fontSize: "1.25rem", fontWeight: 700 },
-    h5: { fontSize: "1.75rem" },
-    h6: { fontSize: "1rem", fontWeight: 700 },
   },
 
   components: {
@@ -82,6 +76,7 @@ export const theme = createTheme({
           outline: "none",
           fontFamily: POPPINS_FONT,
           backgroundColor: "#f6f6f6",
+          padding: "16px",
           "&:hover .MuiOutlinedInput-notchedOutline": {
             borderColor: PRIMARY_LIGHT,
           },
@@ -96,6 +91,7 @@ export const theme = createTheme({
           borderColor: "#f6f6f6",
         },
         input: {
+          padding: "0",
           "&::placeholder": {
             opacity: 0.8,
             fontSize: "0.9rem",

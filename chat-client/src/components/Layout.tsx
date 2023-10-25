@@ -1,11 +1,10 @@
-import { Box } from "@mui/material"
-import { styled } from "@mui/styles"
-import Navbar from "components/Navbar"
+import { Box } from "@mui/material";
+import { styled } from "@mui/styles";
+import Navbar from "components/Navbar";
 
 const CustomBox = styled(Box)({
-  height: "100%",
-  padding: "30px",
-})
+  padding: "20px",
+});
 
 const Layout: React.FC<any> = ({ children }) => {
   return (
@@ -13,7 +12,7 @@ const Layout: React.FC<any> = ({ children }) => {
       <Navbar />
       <CustomBox>{children}</CustomBox>
     </>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;
