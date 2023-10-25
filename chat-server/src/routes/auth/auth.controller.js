@@ -28,7 +28,8 @@ const handleLogin = async (req, res) => {
     })
   }
 
-  const { firstName, lastName, profileImage } = user
+  const { _id, firstName, lastName, profileImage } = user
+  const userDetails = { _id, email, firstName, lastName, profileImage }
   const token = generateToken({
     email,
     firstName,
@@ -38,16 +39,11 @@ const handleLogin = async (req, res) => {
   return res.status(200).json({
     token,
     success: true,
-    data: {
-      email,
-      firstName,
-      lastName,
-      profileImage,
-    },
+    data: userDetails,
   })
 }
 
-const handleSignOut = async (req, res) => {
+const handleSignOut = async (_, res) => {
   return res.status(200).json({
     data: "Logout successfully",
   })

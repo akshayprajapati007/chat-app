@@ -1,4 +1,5 @@
 const JWT_EXPIRATION_TIME = "1d"
+const ID_HEADER = "_id"
 const EMAIL_HEADER = "email"
 const AUTHORIZATION_HEADER = "authorization"
 
@@ -12,6 +13,7 @@ const EMAIL_VERIFICATION_TEXT = "Verification code is"
 module.exports = {
   JWT_EXPIRATION_TIME,
   AUTHORIZATION_HEADER,
+  ID_HEADER,
   EMAIL_HEADER,
   HASH_ROUNDS,
   MAIL_HOST,

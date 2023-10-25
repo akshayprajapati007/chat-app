@@ -4,6 +4,7 @@ const {
   JWT_EXPIRATION_TIME,
   AUTHORIZATION_HEADER,
   EMAIL_HEADER,
+  ID_HEADER,
 } = require("./utility/constants.js")
 const { JWT_TOKEN_SECRET } = require("./configs")
 

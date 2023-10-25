@@ -55,22 +55,17 @@ const validateOTP = async (req, res) => {
       if (response.otp === Number(otp)) {
         await removeOTP(email)
         const user = await verifyUserEmail(email)
-        const { firstName, lastName, profileImage } = user
-
+        const { _id, email, firstName, lastName, profileImage } = user
+        const userDetails = { _id, email, firstName, lastName, profileImage }
         const token = generateToken({
-          email,
+          mail,
           firstName,
           lastName,
         })
 
         return res.status(200).json({
           token,
-          data: {
-            email,
-            firstName,
-            lastName,
-            profileImage,
-          },
+          data: userDetails,
           success: true,
           message: "Verification code verified successfully!",
         })
