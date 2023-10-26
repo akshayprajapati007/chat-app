@@ -5,6 +5,11 @@ export interface ISearchUserDetails extends IUserDetails {
   friendshipStatus: FriendshipStatus
 }
 
+export interface IUserDetailsResponse {
+  data: ISearchUserDetails
+  success: boolean
+}
+
 export interface ISearchUsersResponse {
   data: ISearchUserDetails[]
   success: boolean

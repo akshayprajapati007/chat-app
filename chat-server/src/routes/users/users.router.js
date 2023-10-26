@@ -1,5 +1,6 @@
 const express = require("express")
 const {
+  handleGetUserDetails,
   handleSearchUserByName,
   handleNewFriendRequest,
 } = require("./users.controller")
@@ -8,6 +9,7 @@ const AppRoutings = require("../../utility/app-routings")
 
 const usersRouter = express.Router()
 
+usersRouter.get(AppRoutings.GetUserDetails, validateToken, handleGetUserDetails)
 usersRouter.get(AppRoutings.searchUsers, validateToken, handleSearchUserByName)
 usersRouter.post(
   AppRoutings.friendRequest,

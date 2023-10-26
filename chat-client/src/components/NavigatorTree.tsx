@@ -11,10 +11,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "flex",
     alignItems: "center",
     gap: "3px",
-    "& > svg": {
+    "& svg": {
       color: "#333",
       fontSize: "15px",
     },
+  },
+  arrowIcon: {
+    color: "#333",
+    fontSize: "15px",
+    paddingTop: "2.5px",
+    paddingRight: "2px",
   },
   navigator: {
     color: "#333",
@@ -39,8 +45,13 @@ const NavigatorTree = ({ navigators }: INavigatorTreeProps) => {
       {navigators.map((navigator: INavigator, index: number) => {
         const { heading, link } = navigator
         return (
-          <>
-            {index !== 0 && <ArrowForwardIcon fontSize="small" />}
+          <Box display="flex" alignItems="center" key={heading}>
+            {index !== 0 && (
+              <ArrowForwardIcon
+                className={classes.arrowIcon}
+                fontSize="small"
+              />
+            )}
             <Link
               to={link}
               className={clsx([
@@ -52,7 +63,7 @@ const NavigatorTree = ({ navigators }: INavigatorTreeProps) => {
             >
               {heading}
             </Link>
-          </>
+          </Box>
         )
       })}
     </Box>
