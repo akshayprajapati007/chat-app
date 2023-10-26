@@ -5,6 +5,7 @@ const AppRoutings = {
   Profile: "/profile",
   UpdateProfile: "/update-profile",
   UpdateProfileImage: "/update-profile-image",
+  GetUserDetails: "/get-user-details",
   searchUsers: "/search-users",
   friendRequest: "/friend-request",
   sendOTP: "/send-otp",

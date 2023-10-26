@@ -1,4 +1,5 @@
 const users = require("./users.mongo")
+const friends = require("../friends/friends.mongo")
 const mongoose = require("mongoose")
 
 const findUserByEmail = async (email) => {
@@ -89,6 +90,48 @@ const findUserByName = async (email, searchQuery, page, perPage) => {
   return usersWithFriendshipStatus
 }
 
+const getUserProfileById = async (email, recipientUserId) => {
+  try {
+    const { _id: loggedInUserId } = await findUserByEmail(email)
+
+    const userWithFriendshipStatus = await users.findOne(
+      {
+        _id: new mongoose.Types.ObjectId(recipientUserId),
+        isEmailVerified: true,
+      },
+      {
+        __v: 0,
+        createdAt: 0,
+        isEmailVerified: 0,
+        password: 0,
+      }
+    )
+
+    if (userWithFriendshipStatus) {
+      const friendships = await friends.findOne({
+        $or: [
+          {
+            sender: loggedInUserId,
+            receiver: recipientUserId,
+          },
+          {
+            sender: recipientUserId,
+            receiver: loggedInUserId,
+          },
+        ],
+      })
+      const userObject = userWithFriendshipStatus.toObject()
+      userObject.friendshipStatus = friendships ? friendships.status : ""
+
+      return userObject
+    } else {
+      return null
+    }
+  } catch (error) {
+    console.log("error", error)
+  }
+}
+
 const getAllUsers = async () => {
   return await users.find({}, "-__v")
 }
@@ -136,6 +179,7 @@ module.exports = {
   getAllUsers,
   findUserByEmail,
   findUserByName,
+  getUserProfileById,
   registerUser,
   verifyUserEmail,
   updateUser,
