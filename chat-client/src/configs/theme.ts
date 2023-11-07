@@ -49,17 +49,21 @@ export const theme = createTheme({
         root: {
           fontWeight: 600,
           minWidth: "100px",
-          minHeight: "3em",
+          minHeight: "2.2em",
           borderRadius: "20px",
-          backgroundColor: PRIMARY_MAIN,
           color: "#fff",
           textTransform: "none",
+          padding: "8px 24px",
+          width: "100%",
           "& > span": {
             fontWeight: 500,
           },
           "&:hover": {
             borderColor: "transparent",
-            backgroundColor: PRIMARY_LIGHT,
+          },
+          "&:disabled": {
+            backgroundColor: "#d1d1d1",
+            color: "#333",
           },
         },
         contained: {

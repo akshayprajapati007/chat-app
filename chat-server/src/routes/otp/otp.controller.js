@@ -37,10 +37,10 @@ const handleOTP = async (req, res) => {
 }
 
 const validateOTP = async (req, res) => {
-  const { email, otp } = req.body
+  const { email: emailBody, otp } = req.body
 
   try {
-    const response = await findOTPByEmail(email)
+    const response = await findOTPByEmail(emailBody)
     const { expireIn } = response
 
     const currentDate = new Date()
@@ -53,12 +53,12 @@ const validateOTP = async (req, res) => {
       })
     } else {
       if (response.otp === Number(otp)) {
-        await removeOTP(email)
-        const user = await verifyUserEmail(email)
+        await removeOTP(emailBody)
+        const user = await verifyUserEmail(emailBody)
         const { _id, email, firstName, lastName, profileImage } = user
         const userDetails = { _id, email, firstName, lastName, profileImage }
         const token = generateToken({
-          mail,
+          email,
           firstName,
           lastName,
         })

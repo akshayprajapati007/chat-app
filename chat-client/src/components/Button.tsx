@@ -3,24 +3,30 @@ import {
   ButtonProps,
   CircularProgress,
 } from "@mui/material"
-import { makeStyles } from "@mui/styles"
-
-const useStyles = makeStyles({
-  button: {
-    width: "100%",
-    padding: "8px 16px !important",
-  },
-})
 
 interface IButtonProps extends ButtonProps {
   isLoading?: boolean
 }
 
-const Button = ({ children, isLoading, ...props }: IButtonProps) => {
-  const classes = useStyles()
+const Button = ({
+  children,
+  disabled,
+  isLoading,
+  startIcon,
+  endIcon,
+  className,
+  variant = "contained",
+  ...props
+}: IButtonProps) => {
   return (
-    <MuiButton {...props} className={classes.button}>
-      {isLoading ? <CircularProgress size={24} /> : children}
+    <MuiButton
+      {...props}
+      startIcon={isLoading ? null : startIcon}
+      endIcon={isLoading ? null : endIcon}
+      disabled={isLoading || disabled}
+      variant={variant}
+    >
+      {isLoading ? <CircularProgress color="inherit" size={20} /> : children}
     </MuiButton>
   )
 }

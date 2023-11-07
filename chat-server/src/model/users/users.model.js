@@ -1,6 +1,7 @@
 const users = require("./users.mongo")
 const friends = require("../friends/friends.mongo")
 const mongoose = require("mongoose")
+const FriendshipStatus = require("../../utility/friendship-status")
 
 const findUserByEmail = async (email) => {
   const user = await users.findOne(
@@ -93,10 +94,11 @@ const findUserByName = async (email, searchQuery, page, perPage) => {
 const getUserProfileById = async (email, recipientUserId) => {
   try {
     const { _id: loggedInUserId } = await findUserByEmail(email)
+    const receiverMongooseId = new mongoose.Types.ObjectId(recipientUserId)
 
     const userWithFriendshipStatus = await users.findOne(
       {
-        _id: new mongoose.Types.ObjectId(recipientUserId),
+        _id: receiverMongooseId,
         isEmailVerified: true,
       },
       {
@@ -121,9 +123,21 @@ const getUserProfileById = async (email, recipientUserId) => {
         ],
       })
       const userObject = userWithFriendshipStatus.toObject()
-      userObject.friendshipStatus = friendships ? friendships.status : ""
+      let friendshipStatus = FriendshipStatus.noRelation
+      isFriendRequest = false
+      if (friendships) {
+        const { status, receiver } = friendships
+        friendshipStatus = status
+        isFriendRequest =
+          receiver.valueOf() === loggedInUserId.valueOf() &&
+          status === FriendshipStatus.pending
+      }
 
-      return userObject
+      return {
+        ...userObject,
+        friendshipStatus,
+        isFriendRequest,
+      }
     } else {
       return null
     }

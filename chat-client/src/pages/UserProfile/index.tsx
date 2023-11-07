@@ -24,6 +24,7 @@ import { UserAddIcon, UserCancelIcon } from "assets/images"
 const useStyles = makeStyles((theme: Theme) => ({
   userContentWrapper: {
     display: "flex",
+    alignItems: "center",
     gap: "20px",
     borderRadius: "12px",
     padding: "30px",
@@ -44,22 +45,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontSize: "11px !important",
     backgroundColor: theme.palette.primary.main,
   },
-  pendingText: {
-    color: "#fff",
-    borderRadius: "12px",
-    padding: "2px 8px",
-    fontSize: "11px !important",
-    backgroundColor: theme.palette.secondary.main,
-  },
   email: {
     color: "#333",
     opacity: "0.6",
     fontSize: "14px !important",
     fontWeight: "500 !important",
-  },
-  cancelRequestButton: {
-    backgroundColor: "#feab0b",
-    marginTop: "10px",
   },
 }))
 
@@ -69,16 +59,31 @@ const UserProfile = () => {
   const navigate = useNavigate()
 
   const [isLoading, setIsLoading] = useState(false)
+  const [isFriendRequestLoading, setIsFriendRequestLoading] = useState(false)
+  const [isAcceptingFriendRequest, setIsAcceptingFriendRequest] =
+    useState(false)
+  const [isRejectingFriendRequest, setIsRejectingFriendRequest] =
+    useState(false)
+  const [isRemovingFriend, setIsRemovingFriend] = useState(false)
   const [userDetails, setUserDetails] = useState<ISearchUserDetails>({
     email: "",
     firstName: "",
     lastName: "",
     profileImage: "",
     _id: "",
-    friendshipStatus: "" as FriendshipStatus.NO_RELATION,
+    friendshipStatus: FriendshipStatus.EMPTY,
+    isFriendRequest: false,
   })
-  const { email, firstName, lastName, profileImage, friendshipStatus } =
-    userDetails
+
+  const {
+    _id,
+    email,
+    firstName,
+    lastName,
+    profileImage,
+    friendshipStatus,
+    isFriendRequest,
+  } = userDetails
 
   const { noRelation, isFriend, isFriendRequestSent, isFriendRequestRejected } =
     useFriendshipStatusHook(friendshipStatus)
@@ -106,15 +111,148 @@ const UserProfile = () => {
     }
   }
 
+  const handleSendFriendRequest = async () => {
+    setIsFriendRequestLoading(true)
+    try {
+      const res = await userService.friendRequest({
+        receiverId: _id,
+        status: FriendshipStatus.PENDING,
+      })
+      setUserDetails(res.data.data)
+    } catch (e: any) {
+      toast.error(e.response.data.error)
+    } finally {
+      setIsFriendRequestLoading(false)
+    }
+  }
+
+  const handleCancelFriendRequest = async () => {
+    setIsFriendRequestLoading(true)
+    try {
+      const res = await userService.friendRequest({
+        receiverId: _id,
+        status: FriendshipStatus.NO_RELATION,
+      })
+      setUserDetails(res.data.data)
+    } catch (e: any) {
+      toast.error(e.response.data.error)
+    } finally {
+      setIsFriendRequestLoading(false)
+    }
+  }
+
+  const handleAcceptFriendRequest = async () => {
+    setIsAcceptingFriendRequest(true)
+    try {
+      const res = await userService.friendRequest({
+        receiverId: _id,
+        status: FriendshipStatus.ACCEPTED,
+      })
+      setUserDetails(res.data.data)
+    } catch (e: any) {
+      toast.error(e.response.data.error)
+    } finally {
+      setIsAcceptingFriendRequest(false)
+    }
+  }
+
+  const handleRejectFriendRequest = async () => {
+    setIsRejectingFriendRequest(true)
+    try {
+      const res = await userService.friendRequest({
+        receiverId: _id,
+        status: FriendshipStatus.REJECTED,
+      })
+      setUserDetails(res.data.data)
+    } catch (e: any) {
+      toast.error(e.response.data.error)
+    } finally {
+      setIsRejectingFriendRequest(false)
+    }
+  }
+
+  const handleRemoveFriend = async () => {
+    setIsRemovingFriend(true)
+    try {
+      const res = await userService.removeFriend(_id)
+      setUserDetails(res.data.data)
+    } catch (e: any) {
+      toast.error(e.response.data.error)
+    } finally {
+      setIsRemovingFriend(false)
+    }
+  }
+
   useEffect(() => {
     if (id) getUserDetails(id)
     else navigate(-1)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
+  const renderFriendRequestButton = () => {
+    if (noRelation || isFriendRequestRejected) {
+      return (
+        <Button
+          startIcon={<img src={UserAddIcon} height={18} alt="user add" />}
+          isLoading={isFriendRequestLoading}
+          onClick={handleSendFriendRequest}
+        >
+          Send friend request
+        </Button>
+      )
+    }
+
+    if (isFriend) {
+      return (
+        <Button
+          color="secondary"
+          isLoading={isRemovingFriend}
+          onClick={handleRemoveFriend}
+        >
+          Remove friend
+        </Button>
+      )
+    }
+
+    if (isFriendRequest) {
+      return (
+        <Box display="flex" gap="10px">
+          <Button
+            isLoading={isAcceptingFriendRequest}
+            onClick={handleAcceptFriendRequest}
+          >
+            Accept
+          </Button>
+          <Button
+            color="error"
+            isLoading={isRejectingFriendRequest}
+            onClick={handleRejectFriendRequest}
+          >
+            Reject
+          </Button>
+        </Box>
+      )
+    }
+
+    if (isFriendRequestSent) {
+      return (
+        <Button
+          startIcon={<img src={UserCancelIcon} height={18} alt="user add" />}
+          color="secondary"
+          isLoading={isFriendRequestLoading}
+          onClick={handleCancelFriendRequest}
+        >
+          Cancel friend request
+        </Button>
+      )
+    }
+
+    return null
+  }
+
   return (
     <Layout>
-      <Container fixed>
+      <Container maxWidth="md">
         {isLoading || !userDetails._id ? (
           <Box
             height={"calc(100vh - 100px)"}
@@ -144,42 +282,9 @@ const UserProfile = () => {
                         Friend
                       </Typography>
                     )}
-                    {isFriendRequestSent && (
-                      <Typography className={classes.pendingText}>
-                        Request pending
-                      </Typography>
-                    )}
                   </Box>
                   <Typography className={classes.email}>{email}</Typography>
-                  {noRelation ||
-                    isFriendRequestRejected ||
-                    (false && (
-                      <Box paddingTop={3}>
-                        <Button
-                          startIcon={
-                            <img src={UserAddIcon} height={18} alt="user add" />
-                          }
-                        >
-                          Send friend request
-                        </Button>
-                      </Box>
-                    ))}
-                  {isFriendRequestSent && (
-                    <Box paddingTop={3}>
-                      <Button
-                        startIcon={
-                          <img
-                            src={UserCancelIcon}
-                            height={18}
-                            alt="user add"
-                          />
-                        }
-                        className={classes.cancelRequestButton}
-                      >
-                        Cancel friend request
-                      </Button>
-                    </Box>
-                  )}
+                  <Box paddingTop={3}>{renderFriendRequestButton()}</Box>
                 </Box>
               </Box>
             </Box>

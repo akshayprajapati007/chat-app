@@ -3,6 +3,7 @@ import { IUserDetails } from "./common"
 
 export interface ISearchUserDetails extends IUserDetails {
   friendshipStatus: FriendshipStatus
+  isFriendRequest: boolean
 }
 
 export interface IUserDetailsResponse {
@@ -17,9 +18,5 @@ export interface ISearchUsersResponse {
 
 export interface IFriendRequestPayload {
   receiverId: string
-}
-
-export interface IFriendRequestResponse {
-  message: string
-  success: boolean
+  status: FriendshipStatus
 }

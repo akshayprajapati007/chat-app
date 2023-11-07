@@ -17,7 +17,6 @@ import { Link } from "react-router-dom"
 import { AppRoutings } from "utility/enums/app-routings"
 import { useAppSelector, useAppDispatch } from "hooks/storeHook"
 import { type RootState } from "store/store"
-import { resetUserDetails } from "store/slices/userSlice"
 import SearchUserList from "./SearchUserList"
 
 const useStyles = makeStyles({
@@ -65,7 +64,6 @@ const Navbar: () => JSX.Element = () => {
   const handleLogout = async () => {
     try {
       await authService.signOut()
-      dispatch(resetUserDetails())
     } catch (err: any) {
       console.log(err)
     }

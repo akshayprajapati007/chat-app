@@ -8,10 +8,12 @@ const useFriendshipStatusHook = (friendshipStatus: FriendshipStatus) => {
   const [isFriendRequestRejected, setIsFriendRequestRejected] = useState(false)
 
   useEffect(() => {
-    setNoRelation(friendshipStatus === FriendshipStatus.NO_RELATION)
-    setIsFriend(friendshipStatus === FriendshipStatus.ACCEPTED)
-    setIsFriendRequestSent(friendshipStatus === FriendshipStatus.PENDING)
-    setIsFriendRequestRejected(friendshipStatus === FriendshipStatus.REJECTED)
+    if (friendshipStatus) {
+      setNoRelation(friendshipStatus === FriendshipStatus.NO_RELATION)
+      setIsFriend(friendshipStatus === FriendshipStatus.ACCEPTED)
+      setIsFriendRequestSent(friendshipStatus === FriendshipStatus.PENDING)
+      setIsFriendRequestRejected(friendshipStatus === FriendshipStatus.REJECTED)
+    }
   }, [friendshipStatus])
 
   return { noRelation, isFriend, isFriendRequestSent, isFriendRequestRejected }

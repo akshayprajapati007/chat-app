@@ -10,6 +10,8 @@ import Cookies from "js-cookie"
 import { TOKEN_NAME } from "utility/constants"
 import { AppRoutings } from "utility/enums/app-routings"
 import httpClient from "services/base-service"
+import store from "store/store"
+import { resetUserDetails } from "store/slices/userSlice"
 
 const getAuthToken = (): string | undefined => Cookies.get(TOKEN_NAME)
 
@@ -39,6 +41,7 @@ const signOut = (): Promise<AxiosResponse<any>> => {
 
 const terminateLocalSession = () => {
   Cookies.remove(TOKEN_NAME)
+  store.dispatch(resetUserDetails())
   redirectToLoginPage()
 }
 

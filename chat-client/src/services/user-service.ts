@@ -3,12 +3,12 @@ import {
   SEARCH_USERS_ENDPOINT,
   FRIEND_REQUEST_ENDPOINT,
   GET_USER_DETAILS_ENDPOINT,
+  REMOVE_FRIEND_ENDPOINT,
 } from "configs"
 import httpClient from "services/base-service"
 import {
   ISearchUsersResponse,
   IFriendRequestPayload,
-  IFriendRequestResponse,
   IUserDetailsResponse,
 } from "utility/interfaces/users"
 
@@ -28,15 +28,23 @@ const searchUsers = async (
   return await httpClient.get(ENDPOINT)
 }
 
-const sendFriendRequest = async (
+const friendRequest = async (
   payload: IFriendRequestPayload
-): Promise<AxiosResponse<IFriendRequestResponse>> => {
+): Promise<AxiosResponse<IUserDetailsResponse>> => {
   return await httpClient.post(FRIEND_REQUEST_ENDPOINT, payload)
+}
+
+const removeFriend = async (
+  receiverId: string
+): Promise<AxiosResponse<IUserDetailsResponse>> => {
+  const ENDPOINT = `${REMOVE_FRIEND_ENDPOINT}/${receiverId}`
+  return await httpClient.delete(ENDPOINT)
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   getUserDetails,
   searchUsers,
-  sendFriendRequest,
+  friendRequest,
+  removeFriend,
 }

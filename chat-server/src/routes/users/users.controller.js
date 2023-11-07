@@ -1,8 +1,16 @@
 const {
   findUserByName,
+  findUserByEmail,
   getUserProfileById,
 } = require("../../model/users/users.model")
-const { createFriendRequest } = require("../../model/friends/friends.model")
+const {
+  createFriendRequest,
+  cancelFriendRequest,
+  acceptFriendRequest,
+  rejectFriendRequest,
+  removeFriend,
+} = require("../../model/friends/friends.model")
+const FriendshipStatus = require("../../utility/friendship-status")
 
 const handleGetUserDetails = async (req, res) => {
   try {
@@ -54,15 +62,48 @@ const handleSearchUserByName = async (req, res) => {
   }
 }
 
-const handleNewFriendRequest = async (req, res) => {
+const handleFriendRequest = async (req, res) => {
   try {
-    const users = await createFriendRequest(req.body)
+    const { email } = req.headers
+    const { receiverId, status } = req.body
+    const { _id: loggedInUserId } = await findUserByEmail(email)
 
+    if (status === FriendshipStatus.pending)
+      await createFriendRequest(loggedInUserId, receiverId)
+    if (status === FriendshipStatus.noRelation)
+      await cancelFriendRequest(loggedInUserId, receiverId)
+    if (status === FriendshipStatus.accepted)
+      await acceptFriendRequest(receiverId, loggedInUserId)
+    if (status === FriendshipStatus.rejected)
+      await rejectFriendRequest(receiverId, loggedInUserId)
+
+    const user = await getUserProfileById(email, receiverId)
     return res.status(200).json({
       success: true,
-      data: users,
+      data: user,
     })
   } catch (err) {
+    return res.status(500).json({
+      success: false,
+      data: err,
+    })
+  }
+}
+
+const handleRemoveFriend = async (req, res) => {
+  try {
+    const { email } = req.headers
+    const { recipientId } = req.params
+    const { _id: loggedInUserId } = await findUserByEmail(email)
+
+    const result = await removeFriend(loggedInUserId, recipientId)
+    const user = await getUserProfileById(email, recipientId)
+    return res.status(200).json({
+      success: true,
+      data: user,
+    })
+  } catch (err) {
+    console.log("error", err)
     return res.status(500).json({
       success: false,
       data: err,
@@ -73,5 +114,6 @@ const handleNewFriendRequest = async (req, res) => {
 module.exports = {
   handleGetUserDetails,
   handleSearchUserByName,
-  handleNewFriendRequest,
+  handleFriendRequest,
+  handleRemoveFriend,
 }

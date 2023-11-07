@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react"
 import { Box, InputAdornment, CircularProgress } from "@mui/material"
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded"
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded"
 import { makeStyles } from "@mui/styles"
 import TextField from "components/TextField"
 import { ISearchUserDetails } from "utility/interfaces/users"
@@ -35,6 +36,22 @@ const useStyles = makeStyles({
       borderColor: "transparent !important",
     },
   },
+  searchCloseButton: {
+    outline: "none",
+    border: "none",
+    padding: "2px",
+    display: "flex",
+    alignItems: "center",
+    cursor: "pointer",
+    backgroundColor: "transparent",
+    "&:hover": {
+      backgroundColor: "rgba(0, 0, 0, 0.04)",
+      borderRadius: "50%",
+    },
+    "& > svg": {
+      color: "rgba(0, 0, 0, 0.54)",
+    },
+  },
   profileInfoWrapper: {
     textDecoration: "none",
     "& > div": {
@@ -65,6 +82,11 @@ const SearchUserList = () => {
     const { value } = e.target
     setSearch(value)
     if (!value) setUsersList([])
+  }
+
+  const handleClearSearchValue = () => {
+    setSearch("")
+    setUsersList([])
   }
 
   const handleSearchUsers = async () => {
@@ -115,6 +137,13 @@ const SearchUserList = () => {
               <InputAdornment position="end">
                 <CircularProgress size={16} />
               </InputAdornment>
+            ) : search ? (
+              <button
+                className={classes.searchCloseButton}
+                onClick={handleClearSearchValue}
+              >
+                <CloseRoundedIcon fontSize="small" />
+              </button>
             ) : null,
           }}
         />
