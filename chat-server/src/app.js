@@ -10,12 +10,7 @@ const usersRouter = require("./routes/users/users.router")
 
 const app = express()
 
-app.use(
-  cors({
-    origin: CLIENT_URL,
-    allowedHeaders: "Content-Type, Authorization",
-  })
-)
+app.use(cors())
 app.use(express.json({ limit: "10mb" }))
 
 app.use(authRouter)
