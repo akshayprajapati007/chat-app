@@ -1,7 +1,6 @@
 const express = require("express")
 const cors = require("cors")
 
-const { CLIENT_URL } = require("./configs")
 const authRouter = require("./routes/auth/auth.router")
 const otpRouter = require("./routes/otp/otp.router")
 const signUpRouter = require("./routes/signUp/signUp.router")
@@ -12,6 +11,8 @@ const app = express()
 
 app.use(cors())
 app.use(express.json({ limit: "10mb" }))
+
+app.use()
 
 app.use(authRouter)
 app.use(otpRouter)
