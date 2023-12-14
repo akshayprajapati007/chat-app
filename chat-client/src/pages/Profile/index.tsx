@@ -6,6 +6,7 @@ import { makeStyles } from "@mui/styles"
 import * as Yup from "yup"
 import { Formik, Form } from "formik"
 import { toast } from "react-toastify"
+import { isEqual } from "lodash"
 import CustomErrorMessage from "components/CustomErrorMessage"
 import TextField from "components/TextField"
 import Button from "components/Button"
@@ -14,13 +15,19 @@ import { IProfileValues } from "utility/interfaces/profile"
 import { useAppDispatch, useAppSelector } from "hooks/storeHook"
 import { changeUserDetails } from "store/slices/userSlice"
 import { RootState } from "store/store"
-import { isEqual } from "lodash"
 import { AppRoutings } from "utility/enums/app-routings"
 import { INavigator } from "utility/interfaces/common"
 import NavigatorTree from "components/NavigatorTree"
 import { ALLOWED_IMAGE_EXTENSIONS } from "utility/constants"
 import { fileToBase64 } from "utility/constants/helper"
 import Layout from "components/Layout"
+import Friends from "components/Profile/FriendsList"
+
+const sharedWrapperStyles = {
+  boxShadow: "0 2px 18px 4px rgba(176, 176, 176, 0.22)",
+  borderRadius: "12px",
+  width: "800px",
+}
 
 const useStyles = makeStyles((theme: Theme) => ({
   formWrapper: {
@@ -29,11 +36,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: "center",
   },
   formBoxWrapper: {
-    boxShadow: "0 2px 18px 4px rgba(176, 176, 176, 0.22)",
-    borderRadius: "12px",
+    ...sharedWrapperStyles,
     padding: "100px 50px 50px",
-    maxWidth: "800px",
     position: "relative",
+  },
+  friendsListWrapper: {
+    ...sharedWrapperStyles,
+    padding: "30px 50px",
   },
   profileImageWrapper: {
     position: "absolute",
@@ -186,7 +195,7 @@ const Profile = () => {
   return (
     <Layout>
       <NavigatorTree navigators={navigators} />
-      <Box pt={20}>
+      <Box pt={15}>
         <Formik
           validateOnChange
           validateOnBlur
@@ -272,7 +281,7 @@ const Profile = () => {
                           disabled={isUpdatingProfile}
                           isLoading={isUpdatingProfile}
                         >
-                          {isEditingProfile ? 'Update Profile' : 'Edit Profile'}
+                          {isEditingProfile ? "Update Profile" : "Edit Profile"}
                         </Button>
                       </Box>
                     </Grid>
@@ -282,6 +291,11 @@ const Profile = () => {
             </Form>
           )}
         </Formik>
+      </Box>
+      <Box mt={5} display="flex" justifyContent="center">
+        <Box className={classes.friendsListWrapper}>
+          <Friends />
+        </Box>
       </Box>
     </Layout>
   )

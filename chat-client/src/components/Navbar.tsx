@@ -15,7 +15,7 @@ import authService from "services/auth-service"
 import { ChatIcon } from "assets/images"
 import { Link } from "react-router-dom"
 import { AppRoutings } from "utility/enums/app-routings"
-import { useAppSelector, useAppDispatch } from "hooks/storeHook"
+import { useAppSelector } from "hooks/storeHook"
 import { type RootState } from "store/store"
 import SearchUserList from "./SearchUserList"
 
@@ -49,7 +49,6 @@ const useStyles = makeStyles({
 
 const Navbar: () => JSX.Element = () => {
   const classes = useStyles()
-  const dispatch = useAppDispatch()
   const userDetails = useAppSelector((state: RootState) => state.user)
 
   const [isLoggedIn, setIsLoggedIn] = useState(false)

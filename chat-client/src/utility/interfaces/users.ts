@@ -20,3 +20,8 @@ export interface IFriendRequestPayload {
   receiverId: string
   status: FriendshipStatus
 }
+
+export interface IFriendsListResponse {
+  succuss: boolean
+  data: IUserDetails[]
+}

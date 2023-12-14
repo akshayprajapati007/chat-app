@@ -4,12 +4,14 @@ import {
   FRIEND_REQUEST_ENDPOINT,
   GET_USER_DETAILS_ENDPOINT,
   REMOVE_FRIEND_ENDPOINT,
+  FRIENDS_ENDPOINT,
 } from "configs"
 import httpClient from "services/base-service"
 import {
   ISearchUsersResponse,
   IFriendRequestPayload,
   IUserDetailsResponse,
+  IFriendsListResponse,
 } from "utility/interfaces/users"
 
 const getUserDetails = async (
@@ -25,6 +27,15 @@ const searchUsers = async (
   search: string
 ): Promise<AxiosResponse<ISearchUsersResponse>> => {
   const ENDPOINT = `${SEARCH_USERS_ENDPOINT}?page=${page}&perPage=${perPage}&search=${search}`
+  return await httpClient.get(ENDPOINT)
+}
+
+const getFriendsList = async (
+  page: number,
+  perPage: number,
+  search: string
+): Promise<AxiosResponse<IFriendsListResponse>> => {
+  const ENDPOINT = `${FRIENDS_ENDPOINT}?page=${page}&perPage=${perPage}&search=${search}`
   return await httpClient.get(ENDPOINT)
 }
 
@@ -47,4 +58,5 @@ export default {
   searchUsers,
   friendRequest,
   removeFriend,
+  getFriendsList,
 }
