@@ -7,6 +7,7 @@ const AppRoutings = {
   UpdateProfileImage: "/update-profile-image",
   GetUserDetails: "/get-user-details",
   searchUsers: "/search-users",
+  friends: "/friends",
   friendRequest: "/friend-request",
   removeFriend: "/remove-friend/:recipientId",
   sendOTP: "/send-otp",

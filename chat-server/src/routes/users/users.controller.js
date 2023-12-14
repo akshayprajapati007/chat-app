@@ -9,6 +9,7 @@ const {
   acceptFriendRequest,
   rejectFriendRequest,
   removeFriend,
+  getFriendsList,
 } = require("../../model/friends/friends.model")
 const FriendshipStatus = require("../../utility/friendship-status")
 
@@ -111,9 +112,28 @@ const handleRemoveFriend = async (req, res) => {
   }
 }
 
+const friendsList = async (req, res) => {
+  try {
+    const { email } = req.headers
+    const response = await getFriendsList(email)
+
+    return res.status(200).json({
+      success: true,
+      data: response,
+    })
+  } catch (err) {
+    console.log("error", err)
+    return res.status(500).json({
+      success: false,
+      data: err,
+    })
+  }
+}
+
 module.exports = {
   handleGetUserDetails,
   handleSearchUserByName,
   handleFriendRequest,
   handleRemoveFriend,
+  friendsList,
 }
