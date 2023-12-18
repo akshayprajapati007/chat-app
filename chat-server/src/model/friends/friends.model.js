@@ -39,7 +39,7 @@ const getFriendsList = async (email, page, perPage) => {
   }
 }
 
-const getFriendRequestsList = async (email) => {
+const getFriendRequestsList = async (email, page, perPage) => {
   const skip = (page - 1) * perPage
   const { _id: userId } = await findUserByEmail(email)
 

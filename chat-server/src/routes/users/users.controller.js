@@ -133,8 +133,8 @@ const friendsList = async (req, res) => {
 
 const friendRequestsList = async (req, res) => {
   try {
-    const { email } = req.headers
-    const response = await getFriendRequestsList(email)
+    const { email, page, perPage } = req.headers
+    const response = await getFriendRequestsList(email, page, perPage)
 
     return res.status(200).json({
       success: true,
