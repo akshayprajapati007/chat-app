@@ -9,6 +9,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: "center",
     justifyContent: "center",
     height: "15vh",
+    "& p": {
+      fontSize: "1.1rem",
+      color: theme.palette.grey[500],
+      fontWeight: 500,
+    },
   },
   friendHeading: {
     color: "#333",

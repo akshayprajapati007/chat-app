@@ -66,6 +66,7 @@ const ProfileTabs = ({ activeTab, tabs }: ICustomTabsProps) => {
             const { tabLabel } = tab
             return (
               <Tab
+                key={String(tabLabel)}
                 label={tabLabel}
                 className={classes.tab}
                 {...a11yProps(index)}
@@ -75,10 +76,10 @@ const ProfileTabs = ({ activeTab, tabs }: ICustomTabsProps) => {
         </Tabs>
       </Box>
       {tabs.map((tab, index) => {
-        const { tabPanel } = tab
+        const { tabLabel, tabPanel } = tab
 
         return (
-          <CustomTabPanel value={value} index={index}>
+          <CustomTabPanel key={String(tabLabel)} value={value} index={index}>
             {tabPanel}
           </CustomTabPanel>
         )

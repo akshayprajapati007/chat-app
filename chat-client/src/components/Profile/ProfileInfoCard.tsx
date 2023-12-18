@@ -108,7 +108,7 @@ const ProfileInfoCard = ({
         {actionOptions[type].map((option) => {
           const { label, onClick } = option
 
-          return <CustomMenuItem label={label} onClick={onClick} />
+          return <CustomMenuItem key={label} label={label} onClick={onClick} />
         })}
       </CustomPopover>
     </Box>
