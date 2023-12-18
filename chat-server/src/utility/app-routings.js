@@ -8,6 +8,7 @@ const AppRoutings = {
   GetUserDetails: "/get-user-details",
   searchUsers: "/search-users",
   friends: "/friends",
+  friendRequestsList: "/friend-requests-list",
   friendRequest: "/friend-request",
   removeFriend: "/remove-friend/:recipientId",
   sendOTP: "/send-otp",

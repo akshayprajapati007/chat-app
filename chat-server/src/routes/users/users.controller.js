@@ -10,6 +10,7 @@ const {
   rejectFriendRequest,
   removeFriend,
   getFriendsList,
+  getFriendRequestsList,
 } = require("../../model/friends/friends.model")
 const FriendshipStatus = require("../../utility/friendship-status")
 
@@ -114,8 +115,26 @@ const handleRemoveFriend = async (req, res) => {
 
 const friendsList = async (req, res) => {
   try {
+    const { email, page, perPage } = req.headers
+    const response = await getFriendsList(email, page, perPage)
+
+    return res.status(200).json({
+      success: true,
+      data: response,
+    })
+  } catch (err) {
+    console.log("error", err)
+    return res.status(500).json({
+      success: false,
+      data: err,
+    })
+  }
+}
+
+const friendRequestsList = async (req, res) => {
+  try {
     const { email } = req.headers
-    const response = await getFriendsList(email)
+    const response = await getFriendRequestsList(email)
 
     return res.status(200).json({
       success: true,
@@ -136,4 +155,5 @@ module.exports = {
   handleFriendRequest,
   handleRemoveFriend,
   friendsList,
+  friendRequestsList,
 }

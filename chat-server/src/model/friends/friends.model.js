@@ -4,7 +4,8 @@ const mongoose = require("mongoose")
 const FriendshipStatus = require("../../utility/friendship-status")
 const { findUserByEmail } = require("../users/users.model")
 
-const getFriendsList = async (email) => {
+const getFriendsList = async (email, page, perPage) => {
+  const skip = (page - 1) * perPage
   const { _id: userId } = await findUserByEmail(email)
 
   try {
@@ -23,10 +24,44 @@ const getFriendsList = async (email) => {
       friend.sender.equals(userId) ? friend.receiver : friend.sender
     )
 
-    const friendDetails = await users.find(
-      { _id: { $in: friendUserIds } },
-      { firstName: 1, lastName: 1, email: 1, profileImage: 1 }
-    )
+    const friendDetails = await users
+      .find(
+        { _id: { $in: friendUserIds } },
+        { firstName: 1, lastName: 1, email: 1, profileImage: 1 }
+      )
+      .skip(skip)
+      .limit(perPage)
+
+    return friendDetails
+  } catch (error) {
+    console.error("Error finding user friends:", error)
+    throw error
+  }
+}
+
+const getFriendRequestsList = async (email) => {
+  const skip = (page - 1) * perPage
+  const { _id: userId } = await findUserByEmail(email)
+
+  try {
+    const friendRequestsList = await friends.find({
+      receiver: userId,
+      status: "pending",
+    })
+
+    if (!friendRequestsList || friendRequestsList.length === 0) {
+      return []
+    }
+
+    const friendUserIds = friendRequestsList.map((friend) => friend.sender)
+
+    const friendDetails = await users
+      .find(
+        { _id: { $in: friendUserIds } },
+        { firstName: 1, lastName: 1, email: 1, profileImage: 1 }
+      )
+      .skip(skip)
+      .limit(perPage)
 
     return friendDetails
   } catch (error) {
@@ -129,6 +164,7 @@ const removeFriend = async (senderId, recipientId) => {
 
 module.exports = {
   getFriendsList,
+  getFriendRequestsList,
   createFriendRequest,
   cancelFriendRequest,
   acceptFriendRequest,
