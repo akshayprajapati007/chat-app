@@ -18,6 +18,7 @@ const CustomPopover = ({ children }: ICustomPopoverProps) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
     setAnchorEl(event.currentTarget)
   }
 

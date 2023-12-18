@@ -21,7 +21,13 @@ import NavigatorTree from "components/NavigatorTree"
 import { ALLOWED_IMAGE_EXTENSIONS } from "utility/constants"
 import { fileToBase64 } from "utility/constants/helper"
 import Layout from "components/Layout"
-import Friends from "components/Profile/FriendsList"
+import CustomTabs from "components/CustomTabs"
+import {
+  FRIENDS_LABEL,
+  FRIEND_REQUESTS_LABEL,
+} from "utility/constants/messages"
+import FriendsList from "components/Profile/FriendsList"
+import FriendRequestsList from "components/Profile/FriendRequestsList"
 
 const sharedWrapperStyles = {
   boxShadow: "0 2px 18px 4px rgba(176, 176, 176, 0.22)",
@@ -95,6 +101,17 @@ const Profile = () => {
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [isUpdatingProfileImage, setIsUpdatingProfileImage] = useState(false)
+
+  const profileTabs = [
+    {
+      tabLabel: FRIENDS_LABEL,
+      tabPanel: <FriendsList />,
+    },
+    {
+      tabLabel: FRIEND_REQUESTS_LABEL,
+      tabPanel: <FriendRequestsList />,
+    },
+  ]
 
   const initialValues: IProfileValues = {
     firstName,
@@ -294,7 +311,7 @@ const Profile = () => {
       </Box>
       <Box mt={5} display="flex" justifyContent="center">
         <Box className={classes.friendsListWrapper}>
-          <Friends />
+          <CustomTabs tabs={profileTabs} />
         </Box>
       </Box>
     </Layout>

@@ -5,3 +5,8 @@ export enum FriendshipStatus {
   REJECTED = "rejected",
   EMPTY = "",
 }
+
+export enum FriendInfoCardTypes {
+  FRIEND = "friend",
+  FRIEND_REQUEST = "friendRequest",
+}

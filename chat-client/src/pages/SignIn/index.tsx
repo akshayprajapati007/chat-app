@@ -130,6 +130,7 @@ const SignIn = () => {
               <Box>
                 <Box className={classes.fieldWrapper}>
                   <TextField
+                    autoComplete="on"
                     name="email"
                     placeholder="Email"
                     value={values.email}
