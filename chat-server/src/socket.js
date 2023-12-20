@@ -13,7 +13,6 @@ const setupSocket = (io) => {
 
     socket.on("message", async (data) => {
       //const recipientSocketId = io.sockets.adapter.rooms.get(data.recipientId)
-      console.log("here", data)
       const { recipientId, message } = data
       const recipientSocketId = connectedUsers[recipientId]
 

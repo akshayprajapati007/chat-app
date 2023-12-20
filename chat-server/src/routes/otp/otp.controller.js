@@ -5,7 +5,10 @@ const {
   findOTPByEmail,
   removeOTP,
 } = require("../../model/otps/otps.model")
-const { verifyUserEmail } = require("../../model/users/users.model")
+const {
+  verifyUserEmail,
+  findUserByEmail,
+} = require("../../model/users/users.model")
 const { generateToken } = require("../../jwt")
 
 const sendOTP = async (email) => {
@@ -54,7 +57,9 @@ const validateOTP = async (req, res) => {
     } else {
       if (response.otp === Number(otp)) {
         await removeOTP(emailBody)
-        const user = await verifyUserEmail(emailBody)
+        await verifyUserEmail(emailBody)
+        const user = await findUserByEmail(emailBody)
+
         const { _id, email, firstName, lastName, profileImage } = user
         const userDetails = { _id, email, firstName, lastName, profileImage }
         const token = generateToken({
