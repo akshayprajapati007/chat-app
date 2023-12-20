@@ -14,6 +14,8 @@ import { useNavigate, useLocation } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { RESEND_OTP_EXPIRATION_TIME } from "utility/constants"
 import { toast } from "react-toastify"
+import { changeUserDetails } from "store/slices/userSlice"
+import { useAppDispatch } from "hooks/storeHook"
 
 const useStyles = makeStyles((theme: Theme) => ({
   formWrapper: {
@@ -88,6 +90,8 @@ const AccountVerification = () => {
   const classes = useStyles()
   const navigate = useNavigate()
   const location = useLocation()
+  const dispatch = useAppDispatch()
+
   const [isVerifying, setIsVerifying] = useState(false)
   const [isSendingOTP, setIsSendingOTP] = useState(false)
   const [resendBtnTime, setResendBtnTime] = useState(RESEND_OTP_EXPIRATION_TIME)
@@ -147,7 +151,8 @@ const AccountVerification = () => {
       })
       if (res.data.success) {
         AuthService.setAuthToken(res.data.token)
-        window.location.href = `${window.location.protocol}//${window.location.host}`
+        dispatch(changeUserDetails(res.data.data))
+        navigate(AppRoutings.Home)
       }
       setIsVerifying(false)
     } catch (e) {

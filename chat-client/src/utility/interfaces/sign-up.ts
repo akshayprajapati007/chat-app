@@ -1,3 +1,5 @@
+import { IUserDetails } from "./common"
+
 export interface ISignUpPayload {
   firstName: string
   lastName: string
@@ -22,6 +24,7 @@ export interface ISignUpResponse {
 
 export interface IAccountVerificationResponse {
   token: string
+  data: IUserDetails
   success: boolean
   message: string
 }
