@@ -4,6 +4,7 @@ import Navbar from "components/Navbar"
 
 const CustomBox = styled(Box)({
   padding: "20px",
+  height: "100%",
 })
 
 const Layout: React.FC<any> = ({ children }) => {

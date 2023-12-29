@@ -4,10 +4,9 @@ import {
   AppBar,
   Toolbar,
   Grid,
-  Hidden,
   Typography,
   Avatar,
-  Box,
+  Tooltip,
 } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import ExitToAppRoundedIcon from "@mui/icons-material/ExitToAppRounded"
@@ -20,6 +19,11 @@ import { type RootState } from "store/store"
 import SearchUserList from "./SearchUserList"
 import { handleCatchError } from "utility/constants/helper"
 import { BRAND_LABEL } from "utility/constants"
+import {
+  CHATS_LABEL,
+  LOGOUT_LABEL,
+  PROFILE_LABEL,
+} from "utility/constants/messages"
 
 const useStyles = makeStyles({
   logoLink: {
@@ -32,20 +36,6 @@ const useStyles = makeStyles({
   },
   profileInfoWrapper: {
     textDecoration: "none",
-    "& > div": {
-      color: "#fff",
-      display: "flex",
-      gap: "8px",
-      alignItems: "center",
-      padding: "6px 12px",
-      fontWeight: 500,
-      fontSize: "0.9rem",
-      fontFamily: "'Montserrat', sans-serif",
-      borderRadius: "20px",
-      "&:hover": {
-        backgroundColor: "rgba(0, 0, 0, 0.04)",
-      },
-    },
   },
 })
 
@@ -54,7 +44,7 @@ const Navbar: () => JSX.Element = () => {
   const userDetails = useAppSelector((state: RootState) => state.user)
 
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const { firstName, profileImage } = userDetails
+  const { profileImage } = userDetails
 
   useEffect(() => {
     const isCurrentSessionValid = authService.isCurrentSessionValid()
@@ -75,7 +65,7 @@ const Navbar: () => JSX.Element = () => {
       <AppBar position="sticky">
         <Toolbar>
           <Grid container alignItems="center">
-            <Grid item xs={3} sm={3} md={2}>
+            <Grid item xs={3} sm={4} lg={3}>
               <Link to={AppRoutings.Home} className={classes.logoLink}>
                 <Typography variant="h6" marginX={0.5} marginY={0.8}>
                   {BRAND_LABEL}
@@ -84,13 +74,13 @@ const Navbar: () => JSX.Element = () => {
             </Grid>
             {isLoggedIn && (
               <>
-                <Grid item xs={4} sm={4} md={6} lg={7}>
+                <Grid item xs={4} sm={4} lg={6}>
                   <SearchUserList />
                 </Grid>
-                <Grid item xs={5} sm={5} md={4} lg={3}>
+                <Grid item xs={5} sm={4} lg={3}>
                   <Grid
                     container
-                    spacing={2}
+                    spacing={{ xs: 2, md: 3 }}
                     alignItems="center"
                     justifyContent="flex-end"
                   >
@@ -99,36 +89,45 @@ const Navbar: () => JSX.Element = () => {
                         to={AppRoutings.Profile}
                         className={classes.profileInfoWrapper}
                       >
-                        <Box>
-                          <Avatar
-                            sx={{ width: 28, height: 28 }}
-                            src={profileImage}
-                          />
-                          <Hidden mdDown>{firstName.toUpperCase()}</Hidden>
-                        </Box>
+                        <Tooltip title={PROFILE_LABEL}>
+                          <IconButton
+                            title={PROFILE_LABEL}
+                            size="medium"
+                            edge="end"
+                          >
+                            <Avatar
+                              sx={{ width: 26, height: 26 }}
+                              src={profileImage}
+                            />
+                          </IconButton>
+                        </Tooltip>
                       </Link>
                     </Grid>
                     <Grid item xs="auto">
                       <Link to={AppRoutings.Chats}>
-                        <IconButton size="medium" edge="end">
-                          <img
-                            src={ChatIcon}
-                            alt="chat"
-                            height={25}
-                            width={25}
-                          />
-                        </IconButton>
+                        <Tooltip title={CHATS_LABEL}>
+                          <IconButton size="medium" edge="end">
+                            <img
+                              src={ChatIcon}
+                              alt="chat"
+                              height={25}
+                              width={25}
+                            />
+                          </IconButton>
+                        </Tooltip>
                       </Link>
                     </Grid>
                     <Grid item xs="auto">
-                      <IconButton
-                        size="medium"
-                        edge="end"
-                        sx={{ color: "#fff" }}
-                        onClick={handleLogout}
-                      >
-                        <ExitToAppRoundedIcon />
-                      </IconButton>
+                      <Tooltip title={LOGOUT_LABEL}>
+                        <IconButton
+                          size="medium"
+                          edge="end"
+                          sx={{ color: "#fff" }}
+                          onClick={handleLogout}
+                        >
+                          <ExitToAppRoundedIcon />
+                        </IconButton>
+                      </Tooltip>
                     </Grid>
                   </Grid>
                 </Grid>
