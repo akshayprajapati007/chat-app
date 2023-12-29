@@ -1,11 +1,5 @@
 import { useState, useEffect } from "react"
-import {
-  Box,
-  Container,
-  CircularProgress,
-  Avatar,
-  Typography,
-} from "@mui/material"
+import { Box, Container, Avatar, Typography } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import { Theme } from "@mui/material/styles"
 import { useParams, useNavigate } from "react-router-dom"
@@ -14,12 +8,23 @@ import NavigatorTree from "components/NavigatorTree"
 import { AppRoutings } from "utility/enums/app-routings"
 import { INavigator } from "utility/interfaces/common"
 import userService from "services/user-service"
-import { toast } from "react-toastify"
 import { ISearchUserDetails } from "utility/interfaces/users"
 import { FriendshipStatus } from "utility/enums/common"
 import useFriendshipStatusHook from "hooks/useFriendshipStatusHook"
 import Button from "components/Button"
 import { UserAddIcon, UserCancelIcon } from "assets/images"
+import { DEFAULT_USER_INFO } from "utility/constants"
+import { handleCatchError } from "utility/constants/helper"
+import {
+  ACCEPT_LABEL,
+  CANCEL_FRIEND_REQUEST_LABEL,
+  FRIEND_LABEL,
+  HOME_LABEL,
+  REJECT_LABEL,
+  REMOVE_FRIEND_LABEL,
+  SEND_FRIEND_REQUEST_LABEL,
+} from "utility/constants/messages"
+import CustomLoaderContainer from "components/CustomLoaderContainer"
 
 const useStyles = makeStyles((theme: Theme) => ({
   userContentWrapper: {
@@ -66,11 +71,7 @@ const UserProfile = () => {
     useState(false)
   const [isRemovingFriend, setIsRemovingFriend] = useState(false)
   const [userDetails, setUserDetails] = useState<ISearchUserDetails>({
-    email: "",
-    firstName: "",
-    lastName: "",
-    profileImage: "",
-    _id: "",
+    ...DEFAULT_USER_INFO,
     friendshipStatus: FriendshipStatus.EMPTY,
     isFriendRequest: false,
   })
@@ -90,7 +91,7 @@ const UserProfile = () => {
 
   const navigators: INavigator[] = [
     {
-      heading: "Home",
+      heading: HOME_LABEL,
       link: AppRoutings.Home,
     },
     {
@@ -104,8 +105,8 @@ const UserProfile = () => {
     try {
       const response = await userService.getUserDetails(id)
       setUserDetails(response.data.data)
-    } catch (e: any) {
-      toast.error(e.response.data.error)
+    } catch (error: any) {
+      handleCatchError(error)
     } finally {
       setIsLoading(false)
     }
@@ -119,8 +120,8 @@ const UserProfile = () => {
         status: FriendshipStatus.PENDING,
       })
       setUserDetails(res.data.data)
-    } catch (e: any) {
-      toast.error(e.response.data.error)
+    } catch (error: any) {
+      handleCatchError(error)
     } finally {
       setIsFriendRequestLoading(false)
     }
@@ -134,8 +135,8 @@ const UserProfile = () => {
         status: FriendshipStatus.NO_RELATION,
       })
       setUserDetails(res.data.data)
-    } catch (e: any) {
-      toast.error(e.response.data.error)
+    } catch (error: any) {
+      handleCatchError(error)
     } finally {
       setIsFriendRequestLoading(false)
     }
@@ -149,8 +150,8 @@ const UserProfile = () => {
         status: FriendshipStatus.ACCEPTED,
       })
       setUserDetails(res.data.data)
-    } catch (e: any) {
-      toast.error(e.response.data.error)
+    } catch (error: any) {
+      handleCatchError(error)
     } finally {
       setIsAcceptingFriendRequest(false)
     }
@@ -164,8 +165,8 @@ const UserProfile = () => {
         status: FriendshipStatus.REJECTED,
       })
       setUserDetails(res.data.data)
-    } catch (e: any) {
-      toast.error(e.response.data.error)
+    } catch (error: any) {
+      handleCatchError(error)
     } finally {
       setIsRejectingFriendRequest(false)
     }
@@ -176,8 +177,8 @@ const UserProfile = () => {
     try {
       const res = await userService.removeFriend(_id)
       setUserDetails(res.data.data)
-    } catch (e: any) {
-      toast.error(e.response.data.error)
+    } catch (error: any) {
+      handleCatchError(error)
     } finally {
       setIsRemovingFriend(false)
     }
@@ -197,7 +198,7 @@ const UserProfile = () => {
           isLoading={isFriendRequestLoading}
           onClick={handleSendFriendRequest}
         >
-          Send friend request
+          {SEND_FRIEND_REQUEST_LABEL}
         </Button>
       )
     }
@@ -209,7 +210,7 @@ const UserProfile = () => {
           isLoading={isRemovingFriend}
           onClick={handleRemoveFriend}
         >
-          Remove friend
+          {REMOVE_FRIEND_LABEL}
         </Button>
       )
     }
@@ -221,14 +222,14 @@ const UserProfile = () => {
             isLoading={isAcceptingFriendRequest}
             onClick={handleAcceptFriendRequest}
           >
-            Accept
+            {ACCEPT_LABEL}
           </Button>
           <Button
             color="error"
             isLoading={isRejectingFriendRequest}
             onClick={handleRejectFriendRequest}
           >
-            Reject
+            {REJECT_LABEL}
           </Button>
         </Box>
       )
@@ -242,7 +243,7 @@ const UserProfile = () => {
           isLoading={isFriendRequestLoading}
           onClick={handleCancelFriendRequest}
         >
-          Cancel friend request
+          {CANCEL_FRIEND_REQUEST_LABEL}
         </Button>
       )
     }
@@ -253,16 +254,11 @@ const UserProfile = () => {
   return (
     <Layout>
       <Container maxWidth="md">
-        {isLoading || !userDetails._id ? (
-          <Box
-            height={"calc(100vh - 100px)"}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <CircularProgress />
-          </Box>
-        ) : (
+        <CustomLoaderContainer
+          height="calc(100vh - 100px)"
+          loaderSize={30}
+          isLoading={isLoading || !userDetails._id}
+        >
           <>
             <NavigatorTree navigators={navigators} />
             <Box paddingY={3}>
@@ -279,7 +275,7 @@ const UserProfile = () => {
                     </Typography>
                     {isFriend && (
                       <Typography className={classes.friendText}>
-                        Friend
+                        {FRIEND_LABEL}
                       </Typography>
                     )}
                   </Box>
@@ -289,7 +285,7 @@ const UserProfile = () => {
               </Box>
             </Box>
           </>
-        )}
+        </CustomLoaderContainer>
       </Container>
     </Layout>
   )

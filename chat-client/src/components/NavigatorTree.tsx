@@ -2,9 +2,9 @@ import { Box } from "@mui/material"
 import { Link } from "react-router-dom"
 import { Theme } from "@mui/material/styles"
 import { makeStyles } from "@mui/styles"
+import clsx from "clsx"
 import ArrowForwardIcon from "@mui/icons-material/ArrowForwardIosRounded"
 import { INavigator } from "utility/interfaces/common"
-import clsx from "clsx"
 
 const useStyles = makeStyles((theme: Theme) => ({
   mainWrapper: {

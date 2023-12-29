@@ -3,7 +3,9 @@ import storage from "redux-persist/lib/storage"
 import { persistReducer, persistStore } from "redux-persist"
 import thunk from "redux-thunk"
 import userReducer from "store/slices/userSlice"
-import { CURRENT_ENVIRONMENT } from "configs"
+import chatReducer from "store/slices/chatSlice"
+import messageReducer from "store/slices/messageSlice"
+import { IS_DEVELOPMENT_MODE } from "configs"
 
 const persistConfig = {
   key: "user",
@@ -14,11 +16,13 @@ const persistedUserReducer = persistReducer(persistConfig, userReducer)
 
 const rootReducer = combineReducers({
   user: persistedUserReducer,
+  chat: chatReducer,
+  message: messageReducer,
 })
 
 const store = configureStore({
   reducer: rootReducer,
-  devTools: CURRENT_ENVIRONMENT === "development",
+  devTools: IS_DEVELOPMENT_MODE,
   middleware: [thunk],
 })
 

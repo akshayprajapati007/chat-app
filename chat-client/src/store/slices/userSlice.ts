@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { DEFAULT_USER_INFO } from "utility/constants/index"
 import type { RootState } from "../store"
 
 interface UserState {
@@ -9,13 +10,7 @@ interface UserState {
   profileImage: string
 }
 
-const initialState: UserState = {
-  _id: "",
-  firstName: "",
-  lastName: "",
-  email: "",
-  profileImage: "",
-}
+const initialState: UserState = { ...DEFAULT_USER_INFO }
 
 export const userSlice = createSlice({
   name: "user",

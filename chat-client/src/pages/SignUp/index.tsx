@@ -1,18 +1,29 @@
 import { Box, Typography } from "@mui/material"
 import * as Yup from "yup"
 import { Formik, Form } from "formik"
+import { useState } from "react"
+import { makeStyles } from "@mui/styles"
+import { Theme } from "@mui/material/styles"
+import { Link, useNavigate } from "react-router-dom"
 import TextField from "components/TextField"
 import Button from "components/Button"
 import { ISignUpValues } from "utility/interfaces/sign-up"
 import SignUpService from "services/sign-up-service"
-import { makeStyles } from "@mui/styles"
-import { Theme } from "@mui/material/styles"
 import CustomErrorMessage from "components/CustomErrorMessage"
 import AuthLayout from "components/AuthLayout"
 import { AppRoutings } from "utility/enums/app-routings"
-import { Link, useNavigate } from "react-router-dom"
-import { useState } from "react"
-import { toast } from "react-toastify"
+import { handleCatchError } from "utility/constants/helper"
+import {
+  ALREADY_HAVE_AN_ACCOUNT_MESSAGE,
+  EMAIL_REQUIRED_MESSAGE,
+  FIRST_NAME_REQUIRED_MESSAGE,
+  INVALID_EMAIL_ADDRESS_MESSAGE,
+  LAST_NAME_REQUIRED_MESSAGE,
+  LOGIN_LABEL,
+  PASSWORD_REQUIRED_MESSAGE,
+  SIGN_UP_LABEL,
+} from "utility/constants/messages"
+import { BRAND_LABEL } from "utility/constants"
 
 const useStyles = makeStyles((theme: Theme) => ({
   formWrapper: {
@@ -67,12 +78,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 const validationSchema = Yup.object({
-  firstName: Yup.string().required("First name is required"),
-  lastName: Yup.string().required("Last name is required"),
+  firstName: Yup.string().required(FIRST_NAME_REQUIRED_MESSAGE),
+  lastName: Yup.string().required(LAST_NAME_REQUIRED_MESSAGE),
   email: Yup.string()
-    .email("Enter a valid email address")
-    .required("Email is required"),
-  password: Yup.string().required("Password is required"),
+    .email(INVALID_EMAIL_ADDRESS_MESSAGE)
+    .required(EMAIL_REQUIRED_MESSAGE),
+  password: Yup.string().required(PASSWORD_REQUIRED_MESSAGE),
 })
 
 const SignUp = () => {
@@ -97,8 +108,8 @@ const SignUp = () => {
           sendOTP: false,
         },
       })
-    } catch (e: any) {
-      toast.error(e.response.data.error)
+    } catch (error: any) {
+      handleCatchError(error)
     } finally {
       setIsSigningUp(false)
     }
@@ -117,9 +128,7 @@ const SignUp = () => {
           <Form onSubmit={handleSubmit}>
             <Box className={classes.formWrapper}>
               <Box>
-                <Box>
-                  Chat<Typography variant="h5">KI</Typography>
-                </Box>
+                <Box>{BRAND_LABEL}</Box>
               </Box>
               <Box>
                 <Box display="flex" gap="15px">
@@ -168,12 +177,12 @@ const SignUp = () => {
                     type="submit"
                     disabled={isSigningUp}
                   >
-                    Sign Up
+                    {SIGN_UP_LABEL}
                   </Button>
                   <Box className={classes.signUpInfo}>
                     <Typography>
-                      Already have an account?{" "}
-                      <Link to={AppRoutings.SignIn}>Login</Link>
+                      {ALREADY_HAVE_AN_ACCOUNT_MESSAGE}{" "}
+                      <Link to={AppRoutings.SignIn}>{LOGIN_LABEL}</Link>
                     </Typography>
                   </Box>
                 </Box>

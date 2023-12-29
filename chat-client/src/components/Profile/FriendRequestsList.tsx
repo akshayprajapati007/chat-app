@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react"
-import { toast } from "react-toastify"
 import { Grid } from "@mui/material"
 import userService from "services/user-service"
 import FriendInfoCard from "./ProfileInfoCard"
@@ -7,6 +6,7 @@ import { IUserDetails } from "utility/interfaces/common"
 import { EMPTY_FRIEND_REQUESTS_LIST_MESSAGE } from "utility/constants/messages"
 import ProfileList from "./ProfileList"
 import { FriendInfoCardTypes, FriendshipStatus } from "utility/enums/common"
+import { handleCatchError } from "utility/constants/helper"
 
 const FriendRequestsList = () => {
   const [loading, setLoading] = useState(false)
@@ -23,8 +23,8 @@ const FriendRequestsList = () => {
     try {
       const res = await userService.getFriendRequestsList(1, 20, "")
       setFriendRequestsList(res.data.data)
-    } catch (e: any) {
-      toast.error(e.response.data.error)
+    } catch (error: any) {
+      handleCatchError(error)
     } finally {
       setLoading(false)
     }
@@ -37,8 +37,8 @@ const FriendRequestsList = () => {
         status: FriendshipStatus.ACCEPTED,
       })
       getFriendRequestsList()
-    } catch (e: any) {
-      toast.error(e.response.data.error)
+    } catch (error: any) {
+      handleCatchError(error)
     }
   }
 
@@ -49,8 +49,8 @@ const FriendRequestsList = () => {
         status: FriendshipStatus.REJECTED,
       })
       getFriendRequestsList()
-    } catch (e: any) {
-      toast.error(e.response.data.error)
+    } catch (error: any) {
+      handleCatchError(error)
     }
   }
 

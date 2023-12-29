@@ -1,14 +1,20 @@
-import { useState, useEffect, useMemo } from "react"
-import { Box, InputAdornment, CircularProgress } from "@mui/material"
+import { useState, useEffect, useMemo, useRef } from "react"
+import {
+  Box,
+  InputAdornment,
+  CircularProgress,
+  Typography,
+} from "@mui/material"
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded"
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded"
 import { makeStyles } from "@mui/styles"
+import { debounce } from "lodash"
 import TextField from "components/TextField"
 import { ISearchUserDetails } from "utility/interfaces/users"
 import userService from "services/user-service"
-import { toast } from "react-toastify"
-import { debounce } from "lodash"
 import SearchUserCard from "./SearchUserCard"
+import { handleCatchError } from "utility/constants/helper"
+import { NO_RESULT_FOUND_LABEL } from "utility/constants/messages"
 
 const useStyles = makeStyles({
   searchWrapper: {
@@ -74,28 +80,35 @@ const useStyles = makeStyles({
 const SearchUserList = () => {
   const classes = useStyles()
 
+  const searchRef = useRef<HTMLInputElement>()
   const [search, setSearch] = useState("")
   const [isSearching, setIsSearching] = useState(false)
+  const [isEmptyResult, setIsEmptyResult] = useState(false)
   const [usersList, setUsersList] = useState<ISearchUserDetails[]>([])
+  const isResultNotFound = isEmptyResult && search && !isSearching
 
   const handleSearchValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
     setSearch(value)
     if (!value) setUsersList([])
+    if (isEmptyResult) setIsEmptyResult(false)
   }
 
   const handleClearSearchValue = () => {
     setSearch("")
     setUsersList([])
+    if (searchRef.current) searchRef.current.focus()
   }
 
   const handleSearchUsers = async () => {
     setIsSearching(true)
     try {
       const response = await userService.searchUsers(1, 10, search)
-      setUsersList(response.data.data)
-    } catch (e: any) {
-      toast.error(e.response.data.error)
+      const searchResult = response.data.data
+      setIsEmptyResult(searchResult.length === 0)
+      setUsersList(searchResult)
+    } catch (error: any) {
+      handleCatchError(error)
       setUsersList([])
     } finally {
       setIsSearching(false)
@@ -123,9 +136,10 @@ const SearchUserList = () => {
       <Box position="relative">
         <TextField
           value={search}
+          inputRef={searchRef}
           onChange={handleSearchValueChange}
           autoComplete="off"
-          placeholder="Search"
+          placeholder="Search..."
           className={classes.searchField}
           InputProps={{
             startAdornment: (
@@ -169,6 +183,11 @@ const SearchUserList = () => {
                 />
               )
             })}
+            {isResultNotFound && (
+              <Typography p={1.5} align="center" fontWeight={500}>
+                {NO_RESULT_FOUND_LABEL}
+              </Typography>
+            )}
           </Box>
         </Box>
       </Box>

@@ -1,12 +1,12 @@
 /* eslint-disable import/no-cycle */
 import { AxiosResponse } from "axios"
+import Cookies from "js-cookie"
 import {
   IS_DEVELOPMENT_MODE,
   SIGN_IN_ENDPOINT,
   SIGN_OUT_ENDPOINT,
 } from "configs"
 import { ISIgnInPayload, ISignInResponse } from "utility/interfaces/sign-in"
-import Cookies from "js-cookie"
 import { TOKEN_NAME } from "utility/constants"
 import { AppRoutings } from "utility/enums/app-routings"
 import httpClient from "services/base-service"

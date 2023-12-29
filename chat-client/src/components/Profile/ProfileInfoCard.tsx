@@ -7,11 +7,11 @@ import CustomMenuItem from "components/CustomMenuItem"
 import { AppRoutings } from "utility/enums/app-routings"
 import {
   ACCEPT_LABEL,
+  CHAT_LABEL,
   REJECT_LABEL,
   REMOVE_FRIEND_LABEL,
 } from "utility/constants/messages"
 import { FriendInfoCardTypes } from "utility/enums/common"
-import React from "react"
 
 const useStyles = makeStyles((theme: Theme) => ({
   cardWrapper: {
@@ -51,6 +51,7 @@ interface IProfileInfoCardProps {
   type: FriendInfoCardTypes
   profileImage: string
   name: string
+  handleStartChat?: (id: string) => void
   handleRemoveFriend?: (id: string) => void
   handleAcceptFriendRequest?: (id: string) => void
   handleRejectFriendRequest?: (id: string) => void
@@ -61,6 +62,7 @@ const ProfileInfoCard = ({
   name,
   type,
   profileImage,
+  handleStartChat,
   handleRemoveFriend,
   handleAcceptFriendRequest,
   handleRejectFriendRequest,
@@ -72,6 +74,10 @@ const ProfileInfoCard = ({
   }
 
   const friendOptions = [
+    {
+      label: CHAT_LABEL,
+      onClick: callIfExist(handleStartChat),
+    },
     {
       label: REMOVE_FRIEND_LABEL,
       onClick: callIfExist(handleRemoveFriend),

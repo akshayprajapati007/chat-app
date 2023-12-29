@@ -44,6 +44,11 @@ const RoutesList = [
     isProtectedRoute: true,
   },
   {
+    path: AppRoutings.ChatsId,
+    component: <Chats />,
+    isProtectedRoute: true,
+  },
+  {
     path: AppRoutings.UserId,
     component: <UserProfile />,
     isProtectedRoute: true,

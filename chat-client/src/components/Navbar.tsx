@@ -11,13 +11,15 @@ import {
 } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import ExitToAppRoundedIcon from "@mui/icons-material/ExitToAppRounded"
+import { Link } from "react-router-dom"
 import authService from "services/auth-service"
 import { ChatIcon } from "assets/images"
-import { Link } from "react-router-dom"
 import { AppRoutings } from "utility/enums/app-routings"
 import { useAppSelector } from "hooks/storeHook"
 import { type RootState } from "store/store"
 import SearchUserList from "./SearchUserList"
+import { handleCatchError } from "utility/constants/helper"
+import { BRAND_LABEL } from "utility/constants"
 
 const useStyles = makeStyles({
   logoLink: {
@@ -63,8 +65,8 @@ const Navbar: () => JSX.Element = () => {
   const handleLogout = async () => {
     try {
       await authService.signOut()
-    } catch (err: any) {
-      console.log(err)
+    } catch (error: any) {
+      handleCatchError(error)
     }
   }
 
@@ -76,7 +78,7 @@ const Navbar: () => JSX.Element = () => {
             <Grid item xs={3} sm={3} md={2}>
               <Link to={AppRoutings.Home} className={classes.logoLink}>
                 <Typography variant="h6" marginX={0.5} marginY={0.8}>
-                  ChatKI
+                  {BRAND_LABEL}
                 </Typography>
               </Link>
             </Grid>

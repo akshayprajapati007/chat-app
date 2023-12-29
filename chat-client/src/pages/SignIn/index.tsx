@@ -5,7 +5,6 @@ import { Theme } from "@mui/material/styles"
 import { makeStyles } from "@mui/styles"
 import * as Yup from "yup"
 import { Formik, Form } from "formik"
-import { toast } from "react-toastify"
 import CustomErrorMessage from "components/CustomErrorMessage"
 import AuthLayout from "components/AuthLayout"
 import TextField from "components/TextField"
@@ -15,6 +14,17 @@ import { ISignInValues } from "utility/interfaces/sign-in"
 import { AppRoutings } from "utility/enums/app-routings"
 import { useAppDispatch } from "hooks/storeHook"
 import { changeUserDetails } from "store/slices/userSlice"
+import { handleCatchError } from "utility/constants/helper"
+import { BRAND_LABEL } from "utility/constants"
+import {
+  DO_NOT_HAVE_AN_ACCOUNT_MESSAGE,
+  EMAIL_NOT_VERIFIED_MESSAGE,
+  EMAIL_REQUIRED_MESSAGE,
+  INVALID_EMAIL_ADDRESS_MESSAGE,
+  LOGIN_LABEL,
+  PASSWORD_REQUIRED_MESSAGE,
+  SIGN_UP_LABEL,
+} from "utility/constants/messages"
 
 const useStyles = makeStyles((theme: Theme) => ({
   formWrapper: {
@@ -70,9 +80,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const validationSchema = Yup.object({
   email: Yup.string()
-    .email("Enter a valid email address")
-    .required("Email is required"),
-  password: Yup.string().required("Password is required"),
+    .email(INVALID_EMAIL_ADDRESS_MESSAGE)
+    .required(EMAIL_REQUIRED_MESSAGE),
+  password: Yup.string().required(PASSWORD_REQUIRED_MESSAGE),
 })
 
 const SignIn = () => {
@@ -93,9 +103,11 @@ const SignIn = () => {
       AuthService.setAuthToken(res.data.token)
       dispatch(changeUserDetails(res.data.data))
       navigate(AppRoutings.Home)
-    } catch (e: any) {
-      const errorMessage = e.response.data.error
-      if (errorMessage === "Email not verified!") {
+    } catch (error: any) {
+      if (
+        error.response.data.error &&
+        error.response.data.error === EMAIL_NOT_VERIFIED_MESSAGE
+      ) {
         navigate(AppRoutings.AccountVerification, {
           state: {
             email: values.email,
@@ -103,7 +115,7 @@ const SignIn = () => {
           },
         })
       } else {
-        toast.error(e.response.data.error)
+        handleCatchError(error)
       }
     } finally {
       setIsSigning(false)
@@ -123,9 +135,7 @@ const SignIn = () => {
           <Form onSubmit={handleSubmit}>
             <Box className={classes.formWrapper}>
               <Box>
-                <Box>
-                  Chat<Typography variant="h5">KI</Typography>
-                </Box>
+                <Box>{BRAND_LABEL}</Box>
               </Box>
               <Box>
                 <Box className={classes.fieldWrapper}>
@@ -156,12 +166,12 @@ const SignIn = () => {
                     disabled={isSigning}
                     isLoading={isSigning}
                   >
-                    Login
+                    {LOGIN_LABEL}
                   </Button>
                   <Box className={classes.signUpInfo}>
                     <Typography>
-                      Don't have an account?{" "}
-                      <Link to={AppRoutings.SignUp}>SignUp</Link>
+                      {DO_NOT_HAVE_AN_ACCOUNT_MESSAGE}{" "}
+                      <Link to={AppRoutings.SignUp}>{SIGN_UP_LABEL}</Link>
                     </Typography>
                   </Box>
                 </Box>

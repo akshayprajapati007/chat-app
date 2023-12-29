@@ -1,8 +1,12 @@
 import axios, { AxiosError, AxiosResponse } from "axios"
+import { toast } from "react-toastify"
 import { BASE_URL } from "configs"
 import { HttpStatusCodes } from "utility/enums/http-status-codes"
 import authService from "./auth-service"
-import { toast } from "react-toastify"
+import {
+  SERVICE_NOT_FOUND_MESSAGE,
+  SOMETHING_WENT_WRONG_MESSAGE,
+} from "utility/constants/messages"
 
 declare module "axios" {
   export interface AxiosRequestConfig {
@@ -44,10 +48,10 @@ axios.interceptors.response.use(
       case HttpStatusCodes.ConflictError:
         break
       case HttpStatusCodes.InternalServerError:
-        toast.error("Something went wrong")
+        toast.error(SOMETHING_WENT_WRONG_MESSAGE)
         break
       case HttpStatusCodes.NotFound:
-        toast.error("Service not found")
+        toast.error(SERVICE_NOT_FOUND_MESSAGE)
         break
       default:
     }

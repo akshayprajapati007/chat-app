@@ -18,13 +18,24 @@ import { RootState } from "store/store"
 import { AppRoutings } from "utility/enums/app-routings"
 import { INavigator } from "utility/interfaces/common"
 import NavigatorTree from "components/NavigatorTree"
-import { ALLOWED_IMAGE_EXTENSIONS } from "utility/constants"
-import { fileToBase64 } from "utility/constants/helper"
+import {
+  ALLOWED_IMAGE_EXTENSIONS,
+  ALLOWED_IMAGE_TYPES,
+} from "utility/constants"
+import { fileToBase64, handleCatchError } from "utility/constants/helper"
 import Layout from "components/Layout"
 import CustomTabs from "components/CustomTabs"
 import {
+  ALLOWED_IMAGE_EXTENSIONS_MESSAGE,
+  EDIT_PROFILE_LABEL,
+  FIRST_NAME_REQUIRED_MESSAGE,
   FRIENDS_LABEL,
   FRIEND_REQUESTS_LABEL,
+  HOME_LABEL,
+  LAST_NAME_REQUIRED_MESSAGE,
+  PROFILE_LABEL,
+  SOMETHING_WENT_WRONG_MESSAGE,
+  UPDATE_PROFILE_LABEL,
 } from "utility/constants/messages"
 import FriendsList from "components/Profile/FriendsList"
 import FriendRequestsList from "components/Profile/FriendRequestsList"
@@ -87,8 +98,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 const validationSchema = Yup.object({
-  firstName: Yup.string().required("First name is required"),
-  lastName: Yup.string().required("Last name is required"),
+  firstName: Yup.string().required(FIRST_NAME_REQUIRED_MESSAGE),
+  lastName: Yup.string().required(LAST_NAME_REQUIRED_MESSAGE),
 })
 
 const Profile = () => {
@@ -120,11 +131,11 @@ const Profile = () => {
 
   const navigators: INavigator[] = [
     {
-      heading: "Home",
+      heading: HOME_LABEL,
       link: AppRoutings.Home,
     },
     {
-      heading: "Profile",
+      heading: PROFILE_LABEL,
       link: AppRoutings.Profile,
     },
   ]
@@ -143,14 +154,12 @@ const Profile = () => {
       const fileType = fileExtension ? fileExtension.toLowerCase() : ""
 
       if (!ALLOWED_IMAGE_EXTENSIONS.includes(fileType)) {
-        const allowedExtensions =
-          ALLOWED_IMAGE_EXTENSIONS.join("/").toUpperCase()
-        toast.error(`Only ${allowedExtensions} files are allowed`)
+        toast.error(ALLOWED_IMAGE_EXTENSIONS_MESSAGE)
         return
       }
 
       handleImageUpload(files)
-    } else toast.error("Something went wrong!")
+    } else toast.error(SOMETHING_WENT_WRONG_MESSAGE)
   }
 
   const handleImageUpload = async (files: FileList) => {
@@ -168,12 +177,11 @@ const Profile = () => {
         } = response
         dispatch(changeUserDetails(data))
         toast.success(message)
-      } catch (e: any) {
-        toast.error(e.response.data.error)
+      } catch (error: any) {
+        handleCatchError(error)
       }
     } catch (error) {
-      console.log("error", error)
-      toast.error("Something went wrong")
+      handleCatchError(error)
     } finally {
       setIsUpdatingProfileImage(false)
     }
@@ -201,8 +209,8 @@ const Profile = () => {
       } = response
       dispatch(changeUserDetails(data))
       toast.success(message)
-    } catch (e: any) {
-      toast.error(e.response.data.error)
+    } catch (error: any) {
+      handleCatchError(error)
     } finally {
       setIsUpdatingProfile(false)
       setIsEditingProfile(false)
@@ -246,7 +254,7 @@ const Profile = () => {
                     <input
                       hidden
                       type="file"
-                      accept="image/png, image/jpeg, image/gif"
+                      accept={ALLOWED_IMAGE_TYPES}
                       ref={profileImageRef}
                       disabled={isUpdatingProfileImage}
                       onChange={handleImageSelect}
@@ -298,7 +306,9 @@ const Profile = () => {
                           disabled={isUpdatingProfile}
                           isLoading={isUpdatingProfile}
                         >
-                          {isEditingProfile ? "Update Profile" : "Edit Profile"}
+                          {isEditingProfile
+                            ? UPDATE_PROFILE_LABEL
+                            : EDIT_PROFILE_LABEL}
                         </Button>
                       </Box>
                     </Grid>

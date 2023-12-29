@@ -1,14 +1,21 @@
 import { useState, useEffect } from "react"
-import { toast } from "react-toastify"
 import { Grid } from "@mui/material"
+import { useNavigate } from "react-router-dom"
 import userService from "services/user-service"
 import FriendInfoCard from "./ProfileInfoCard"
 import { IUserDetails } from "utility/interfaces/common"
 import { EMPTY_FRIENDS_LIST_MESSAGE } from "utility/constants/messages"
 import ProfileList from "./ProfileList"
 import { FriendInfoCardTypes } from "utility/enums/common"
+import chatService from "services/chat-service"
+import { useAppSelector } from "hooks/storeHook"
+import { RootState } from "store/store"
+import { AppRoutings } from "utility/enums/app-routings"
+import { handleCatchError } from "utility/constants/helper"
 
 const FriendsList = () => {
+  const navigate = useNavigate()
+  const userDetails = useAppSelector((state: RootState) => state.user)
   const [loading, setLoading] = useState(false)
   const [friendsList, setFriendsList] = useState<IUserDetails[]>([])
 
@@ -21,10 +28,26 @@ const FriendsList = () => {
     try {
       const res = await userService.getFriendsList(1, 20, "")
       setFriendsList(res.data.data)
-    } catch (e: any) {
-      toast.error(e.response.data.error)
+    } catch (error: any) {
+      handleCatchError(error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleAccessChat = async (id: string) => {
+    try {
+      const response = await chatService.accessChat(id)
+      const { users } = response.data.data
+      const targetUser = users.filter(
+        (user: IUserDetails) => user._id !== userDetails._id
+      )
+      if (targetUser.length > 0) {
+        const { _id } = targetUser[0]
+        navigate(`${AppRoutings.Chats}/${_id}`)
+      }
+    } catch (error: any) {
+      handleCatchError(error)
     }
   }
 
@@ -32,8 +55,8 @@ const FriendsList = () => {
     try {
       await userService.removeFriend(id)
       getFriendsList()
-    } catch (e: any) {
-      toast.error(e.response.data.error)
+    } catch (error: any) {
+      handleCatchError(error)
     }
   }
 
@@ -54,6 +77,7 @@ const FriendsList = () => {
               name={fullName}
               profileImage={profileImage}
               type={FriendInfoCardTypes.FRIEND}
+              handleStartChat={handleAccessChat}
               handleRemoveFriend={handleRemoveFriend}
             />
           </Grid>

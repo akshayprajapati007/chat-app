@@ -1,10 +1,11 @@
-import { Box, CircularProgress, Grid, Typography } from "@mui/material"
+import { Box, Grid, Typography } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import { Theme } from "@mui/material/styles"
 import React from "react"
+import CustomLoaderContainer from "components/CustomLoaderContainer"
 
 const useStyles = makeStyles((theme: Theme) => ({
-  centerContentContainer: {
+  emptyListWrapper: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -60,25 +61,21 @@ const ProfileList = ({
   return (
     <Box>
       <Box mt={2} width="100%">
-        {isLoading ? (
-          <Box className={classes.centerContentContainer}>
-            <CircularProgress size={24} color="primary" />
-          </Box>
-        ) : (
+        <CustomLoaderContainer isLoading={isLoading} height="15vh">
           <Box className={classes.friendsListContainer}>
             <Grid container spacing={2}>
               {listLength > 0 ? (
                 <>{children}</>
               ) : (
                 <Grid item xs={12}>
-                  <Box className={classes.centerContentContainer}>
+                  <Box className={classes.emptyListWrapper}>
                     <Typography>{emptyListMessage}</Typography>
                   </Box>
                 </Grid>
               )}
             </Grid>
           </Box>
-        )}
+        </CustomLoaderContainer>
       </Box>
     </Box>
   )

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom"
 import { FriendshipStatus } from "utility/enums/common"
 import { AppRoutings } from "utility/enums/app-routings"
 import { theme } from "configs/theme"
+import { FRIEND_LABEL, PENDING_LABEL } from "utility/constants/messages"
 
 const useStyles = makeStyles({
   linkTag: {
@@ -92,11 +93,13 @@ const SearchUserCard = ({
               {name}
             </Typography>
             {isFriend && (
-              <Typography className={classes.friendText}>Friend</Typography>
+              <Typography className={classes.friendText}>
+                {FRIEND_LABEL}
+              </Typography>
             )}
             {isFriendRequestSent && (
               <Typography className={classes.requestPendingText}>
-                Pending
+                {PENDING_LABEL}
               </Typography>
             )}
           </Box>

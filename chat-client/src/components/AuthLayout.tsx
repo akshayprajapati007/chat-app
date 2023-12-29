@@ -1,6 +1,8 @@
 import { Container, Box, Typography, Grid } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import { Theme } from "@mui/material/styles"
+import { WELCOME_TO_LABEL } from "utility/constants/messages"
+import { BRAND_LABEL } from "utility/constants"
 
 const useStyles = makeStyles((theme: Theme) => ({
   spaceContainer: {
@@ -48,14 +50,14 @@ const AuthLayout = ({ children }: any) => {
           <Grid item xs={5}>
             <Box className={classes.headingWrapper}>
               <Typography variant="h2" align="center">
-                Welcome To
+                {WELCOME_TO_LABEL}
               </Typography>
               <Typography
                 className={classes.leftSiteHeading}
                 variant="h2"
                 align="center"
               >
-                ChatKI
+                {BRAND_LABEL}
               </Typography>
             </Box>
           </Grid>

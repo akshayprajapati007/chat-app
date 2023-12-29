@@ -1,21 +1,34 @@
 import { Box, Typography } from "@mui/material"
 import * as Yup from "yup"
 import { Formik, Form } from "formik"
+import { makeStyles } from "@mui/styles"
+import { Theme } from "@mui/material/styles"
+import { useNavigate, useLocation } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
 import TextField from "components/TextField"
 import Button from "components/Button"
 import SignUpService from "services/sign-up-service"
 import AuthService from "services/auth-service"
-import { makeStyles } from "@mui/styles"
-import { Theme } from "@mui/material/styles"
 import CustomErrorMessage from "components/CustomErrorMessage"
 import AuthLayout from "components/AuthLayout"
 import { AppRoutings } from "utility/enums/app-routings"
-import { useNavigate, useLocation } from "react-router-dom"
-import { useEffect, useState } from "react"
-import { RESEND_OTP_EXPIRATION_TIME } from "utility/constants"
-import { toast } from "react-toastify"
+import {
+  BRAND_LABEL,
+  OTP_LENGTH,
+  RESEND_OTP_EXPIRATION_TIME,
+} from "utility/constants"
 import { changeUserDetails } from "store/slices/userSlice"
 import { useAppDispatch } from "hooks/storeHook"
+import { handleCatchError } from "utility/constants/helper"
+import {
+  BLANK_OTP_MESSAGE,
+  INVALID_OTP_MESSAGE,
+  NOTE_LABEL,
+  OTP_SENT_TO_EMAIL_MESSAGE,
+  RESEND_OTP_LABEL,
+  VERIFY_LABEL,
+} from "utility/constants/messages"
 
 const useStyles = makeStyles((theme: Theme) => ({
   formWrapper: {
@@ -82,14 +95,14 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const validationSchema = Yup.object({
   otp: Yup.string()
-    .required("Please enter an OTP")
-    .length(4, "Please enter a valid OTP"),
+    .required(BLANK_OTP_MESSAGE)
+    .length(OTP_LENGTH, INVALID_OTP_MESSAGE),
 })
 
 const AccountVerification = () => {
   const classes = useStyles()
-  const navigate = useNavigate()
   const location = useLocation()
+  const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
   const [isVerifying, setIsVerifying] = useState(false)
@@ -119,10 +132,14 @@ const AccountVerification = () => {
 
   const handleOnPageLoad = () => {
     const { state } = location
-    if (!state?.email) {
-      navigate(location.state?.from || AppRoutings.Home)
-    } else if (state?.sendOTP) {
-      handleSendOTP()
+    if (state) {
+      if (!state.email) {
+        navigate(location.state?.from || AppRoutings.Home)
+      } else if (state.sendOTP) {
+        handleSendOTP()
+      }
+    } else {
+      navigate(AppRoutings.Home)
     }
   }
 
@@ -133,10 +150,10 @@ const AccountVerification = () => {
         state: { email },
       } = location
       await SignUpService.sendOTP({ email })
-      toast.success("An OTP has been sent to your registered email address")
+      toast.success(OTP_SENT_TO_EMAIL_MESSAGE)
       setResendBtnTime(RESEND_OTP_EXPIRATION_TIME)
-    } catch (e: any) {
-      toast.error(e.response?.data?.error)
+    } catch (error: any) {
+      handleCatchError(error)
     } finally {
       setIsSendingOTP(false)
     }
@@ -154,9 +171,8 @@ const AccountVerification = () => {
         dispatch(changeUserDetails(res.data.data))
         navigate(AppRoutings.Home)
       }
-      setIsVerifying(false)
-    } catch (e) {
-      console.log("error, e")
+    } catch (error: any) {
+      handleCatchError(error)
     } finally {
       setIsVerifying(false)
     }
@@ -175,9 +191,7 @@ const AccountVerification = () => {
           <Form onSubmit={handleSubmit}>
             <Box className={classes.formWrapper}>
               <Box>
-                <Box>
-                  Chat<Typography variant="h5">KI</Typography>
-                </Box>
+                <Box>{BRAND_LABEL}</Box>
               </Box>
               <Box>
                 <Box className={classes.fieldWrapper}>
@@ -186,15 +200,14 @@ const AccountVerification = () => {
                     placeholder="OTP"
                     value={values.otp}
                     inputProps={{
-                      maxLength: 4,
+                      maxLength: OTP_LENGTH,
                     }}
                     onChange={handleChange}
                   />
                   <CustomErrorMessage name="otp" />
                   <Box>
                     <Typography className={classes.otpNote}>
-                      NOTE: An OTP has been sent to your registered email
-                      address
+                      {NOTE_LABEL}: {OTP_SENT_TO_EMAIL_MESSAGE}
                     </Typography>
                   </Box>
                   <Box className={classes.resendBtnWrapper}>
@@ -206,7 +219,7 @@ const AccountVerification = () => {
                       disabled={isSendingOTP || resendBtnTime > 0}
                       onClick={handleSendOTP}
                     >
-                      Resend OTP
+                      {RESEND_OTP_LABEL}
                     </Button>
                   </Box>
                 </Box>
@@ -217,7 +230,7 @@ const AccountVerification = () => {
                     type="submit"
                     disabled={isVerifying}
                   >
-                    Verify
+                    {VERIFY_LABEL}
                   </Button>
                 </Box>
               </Box>
