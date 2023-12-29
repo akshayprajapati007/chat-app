@@ -6,7 +6,6 @@ import {
   Grid,
   Typography,
   Avatar,
-  Tooltip,
 } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import ExitToAppRoundedIcon from "@mui/icons-material/ExitToAppRounded"
@@ -54,7 +53,7 @@ const Navbar: () => JSX.Element = () => {
 
   const handleLogout = async () => {
     try {
-      await authService.signOut()
+      authService.signOut()
     } catch (error: any) {
       handleCatchError(error)
     }
@@ -86,48 +85,40 @@ const Navbar: () => JSX.Element = () => {
                   >
                     <Grid item xs="auto">
                       <Link
+                        title={PROFILE_LABEL}
                         to={AppRoutings.Profile}
                         className={classes.profileInfoWrapper}
                       >
-                        <Tooltip title={PROFILE_LABEL}>
-                          <IconButton
-                            title={PROFILE_LABEL}
-                            size="medium"
-                            edge="end"
-                          >
-                            <Avatar
-                              sx={{ width: 26, height: 26 }}
-                              src={profileImage}
-                            />
-                          </IconButton>
-                        </Tooltip>
-                      </Link>
-                    </Grid>
-                    <Grid item xs="auto">
-                      <Link to={AppRoutings.Chats}>
-                        <Tooltip title={CHATS_LABEL}>
-                          <IconButton size="medium" edge="end">
-                            <img
-                              src={ChatIcon}
-                              alt="chat"
-                              height={25}
-                              width={25}
-                            />
-                          </IconButton>
-                        </Tooltip>
-                      </Link>
-                    </Grid>
-                    <Grid item xs="auto">
-                      <Tooltip title={LOGOUT_LABEL}>
-                        <IconButton
-                          size="medium"
-                          edge="end"
-                          sx={{ color: "#fff" }}
-                          onClick={handleLogout}
-                        >
-                          <ExitToAppRoundedIcon />
+                        <IconButton size="medium" edge="end">
+                          <Avatar
+                            sx={{ width: 26, height: 26 }}
+                            src={profileImage}
+                          />
                         </IconButton>
-                      </Tooltip>
+                      </Link>
+                    </Grid>
+                    <Grid item xs="auto">
+                      <Link title={CHATS_LABEL} to={AppRoutings.Chats}>
+                        <IconButton size="medium" edge="end">
+                          <img
+                            src={ChatIcon}
+                            alt="chat"
+                            height={25}
+                            width={25}
+                          />
+                        </IconButton>
+                      </Link>
+                    </Grid>
+                    <Grid item xs="auto">
+                      <IconButton
+                        title={LOGOUT_LABEL}
+                        size="medium"
+                        edge="end"
+                        sx={{ color: "#fff" }}
+                        onClick={handleLogout}
+                      >
+                        <ExitToAppRoundedIcon />
+                      </IconButton>
                     </Grid>
                   </Grid>
                 </Grid>

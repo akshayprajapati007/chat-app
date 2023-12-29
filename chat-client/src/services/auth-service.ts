@@ -31,12 +31,10 @@ const redirectToLoginPage = () => {
   window.location.href = `${window.location.protocol}//${window.location.host}`
 }
 
-const signOut = (): Promise<AxiosResponse<any>> => {
+const signOut = () => {
   terminateSession().then((response) => {
     terminateLocalSession()
-    return response
   })
-  return Promise.reject()
 }
 
 const terminateLocalSession = () => {
