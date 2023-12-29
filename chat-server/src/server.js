@@ -10,6 +10,7 @@ const PORT = SERVER_PORT || 8000
 
 const server = http.createServer(app)
 const io = socketIo(server, {
+  pingTimeout: 60000,
   cors: {
     origin: CLIENT_URL,
   },

@@ -13,6 +13,10 @@ const AppRoutings = {
   removeFriend: "/remove-friend/:recipientId",
   sendOTP: "/send-otp",
   AccountVerification: "/account-verification",
+  Chats: "/chats",
+  AccessChat: "/access-chat",
+  GetMessages: "/get-messages/:chatId",
+  SendMessage: "/send-message",
 }
 
 module.exports = AppRoutings

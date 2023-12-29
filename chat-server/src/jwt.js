@@ -4,9 +4,9 @@ const {
   JWT_EXPIRATION_TIME,
   AUTHORIZATION_HEADER,
   EMAIL_HEADER,
-  ID_HEADER,
 } = require("./utility/constants.js")
 const { JWT_TOKEN_SECRET } = require("./configs")
+const { findUserByEmail } = require("./model/users/users.model.js")
 
 const generateToken = (info) => {
   const accessToken = sign(info, JWT_TOKEN_SECRET, {
@@ -15,7 +15,7 @@ const generateToken = (info) => {
   return accessToken
 }
 
-const validateToken = (req, res, next) => {
+const validateToken = async (req, res, next) => {
   const token = req.headers[AUTHORIZATION_HEADER]
 
   if (!token)
@@ -24,9 +24,10 @@ const validateToken = (req, res, next) => {
     })
 
   try {
-    const isValidToken = verify(token, JWT_TOKEN_SECRET)
-    if (isValidToken) {
-      req.headers[EMAIL_HEADER] = isValidToken.email
+    const tokenData = verify(token, JWT_TOKEN_SECRET)
+    if (tokenData) {
+      req.user = await findUserByEmail(tokenData.email)
+      req.headers[EMAIL_HEADER] = tokenData.email
       return next()
     }
   } catch (err) {

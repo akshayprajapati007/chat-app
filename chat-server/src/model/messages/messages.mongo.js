@@ -1,20 +1,17 @@
 const mongoose = require("mongoose")
 
-const friendsSchema = new mongoose.Schema(
+const messageSchema = new mongoose.Schema(
   {
     sender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
-    receiver: {
+    chat: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      ref: "Chat",
     },
-    status: {
+    message: {
       type: String,
-      enum: ["pending", "accepted", "rejected"],
       required: true,
     },
   },
@@ -23,4 +20,4 @@ const friendsSchema = new mongoose.Schema(
   }
 )
 
-module.exports = mongoose.model("Friend", friendsSchema)
+module.exports = mongoose.model("Message", messageSchema)

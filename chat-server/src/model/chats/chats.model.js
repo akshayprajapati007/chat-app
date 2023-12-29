@@ -1,27 +1,43 @@
+const users = require("../users/users.mongo")
 const chats = require("./chats.mongo")
 
-const findChatBySenderAndRecipient = async (senderId, recipientId) => {
-  const chatList = await chats.find(
-    {
-      senderId,
-      recipientId,
-    },
-    "-__v"
-  )
-  return chatList
+const findChatsList = async (currentUserId) => {
+  const chatsList = await chats
+    .find(
+      {
+        users: { $elemMatch: { $eq: currentUserId } },
+      },
+      "-__v"
+    )
+    .populate("users", "-password -isEmailVerified -__v -createdAt")
+    .populate("lastMessage")
+    .sort({ updatedAt: -1 })
+
+  const newList = await users.populate(chatsList, {
+    path: "lastMessage.sender",
+    select: "firstName lastName email profileImage",
+  })
+  return newList
 }
 
-const saveMessage = async (messageData) => {
-  try {
-    const newMessage = new chats(messageData)
-    await newMessage.save()
-    return newMessage
-  } catch (error) {
-    return error
-  }
+const findChatById = async (chatId) => {
+  return await chats.findById(chatId)
+}
+
+const findChat = async (query) => {
+  return await chats
+    .findOne(query)
+    .populate("users", "-password -isEmailVerified")
+    .populate("lastMessage")
+}
+
+const createChat = async (chat) => {
+  return await chats.create(chat)
 }
 
 module.exports = {
-  saveMessage,
-  findChatBySenderAndRecipient,
+  createChat,
+  findChat,
+  findChatsList,
+  findChatById,
 }
