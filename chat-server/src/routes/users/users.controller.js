@@ -115,12 +115,22 @@ const handleRemoveFriend = async (req, res) => {
 
 const friendsList = async (req, res) => {
   try {
-    const { email, page, perPage } = req.headers
-    const response = await getFriendsList(email, page, perPage)
+    const { email } = req.headers
+    const { search, page, perPage } = req.query
+    const { friends, currentPage, totalPages } = await getFriendsList(
+      email,
+      search,
+      page,
+      perPage
+    )
 
     return res.status(200).json({
       success: true,
-      data: response,
+      data: friends,
+      pagination: {
+        currentPage,
+        totalPages,
+      },
     })
   } catch (err) {
     console.log("error", err)

@@ -1,6 +1,6 @@
+const mongoose = require("mongoose")
 const users = require("./users.mongo")
 const friends = require("../friends/friends.mongo")
-const mongoose = require("mongoose")
 const FriendshipStatus = require("../../utility/friendship-status")
 
 const findUserByEmail = async (email) => {

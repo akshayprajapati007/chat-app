@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const mongoosePaginate = require("mongoose-paginate-v2")
 
 const friendsSchema = new mongoose.Schema(
   {
@@ -22,5 +23,7 @@ const friendsSchema = new mongoose.Schema(
     timestamps: true,
   }
 )
+
+friendsSchema.plugin(mongoosePaginate)
 
 module.exports = mongoose.model("Friend", friendsSchema)

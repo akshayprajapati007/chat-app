@@ -1,38 +1,52 @@
+const mongoose = require("mongoose")
 const friends = require("./friends.mongo")
 const users = require("../users/users.mongo")
-const mongoose = require("mongoose")
 const FriendshipStatus = require("../../utility/friendship-status")
 const { findUserByEmail } = require("../users/users.model")
 
-const getFriendsList = async (email, page, perPage) => {
+const getFriendsList = async (email, search, page, perPage) => {
+  const searchRegex = new RegExp(search, "i")
   const skip = (page - 1) * perPage
-  const { _id: userId } = await findUserByEmail(email)
 
   try {
-    const friendsList = await friends.find({
+    const { _id: userId } = await findUserByEmail(email)
+
+    const friendsQuery = {
       $and: [
         { $or: [{ sender: userId }, { receiver: userId }] },
         { status: "accepted" },
       ],
-    })
-
-    if (!friendsList || friendsList.length === 0) {
-      return []
     }
 
-    const friendUserIds = friendsList.map((friend) =>
+    const friendsList = await friends.paginate(friendsQuery, {
+      page,
+      limit: perPage,
+    })
+
+    const friendUserIds = friendsList.docs.map((friend) =>
       friend.sender.equals(userId) ? friend.receiver : friend.sender
     )
 
-    const friendDetails = await users
-      .find(
-        { _id: { $in: friendUserIds } },
-        { firstName: 1, lastName: 1, email: 1, profileImage: 1 }
-      )
-      .skip(skip)
-      .limit(perPage)
+    const usersQuery = {
+      _id: { $in: friendUserIds },
+      $or: [
+        { firstName: { $regex: searchRegex } },
+        { lastName: { $regex: searchRegex } },
+      ],
+    }
 
-    return friendDetails
+    const friendDetails = await users.paginate(usersQuery, {
+      page,
+      limit: perPage,
+      select: { firstName: 1, lastName: 1, email: 1, profileImage: 1 },
+    })
+
+    return {
+      friends: friendDetails.docs,
+      totalFriends: friendsList.totalDocs,
+      currentPage: friendsList.page,
+      totalPages: friendsList.totalPages,
+    }
   } catch (error) {
     console.error("Error finding user friends:", error)
     throw error
