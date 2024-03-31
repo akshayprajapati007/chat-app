@@ -14,7 +14,6 @@ const Button = ({
   isLoading,
   startIcon,
   endIcon,
-  className,
   variant = "contained",
   ...props
 }: IButtonProps) => {

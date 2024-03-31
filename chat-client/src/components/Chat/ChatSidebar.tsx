@@ -1,10 +1,10 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Box, IconButton, Tooltip, Typography } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import { Theme } from "@mui/material/styles"
 import { useNavigate, useParams } from "react-router-dom"
+import clsx from "clsx"
 import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded"
-import ChatSidebarCard from "components/Chat/ChatSidebarCard"
 import chatService from "services/chat-service"
 import { IChatList } from "utility/interfaces/chat"
 import { useAppDispatch, useAppSelector } from "hooks/storeHook"
@@ -14,10 +14,15 @@ import {
   setChatList,
 } from "store/slices/chatSlice"
 import { AppRoutings } from "utility/enums/app-routings"
-import { CHATS_LABEL, CREATE_NEW_CHAT_LABEL } from "utility/constants/messages"
+import {
+  CANCEL_LABEL,
+  CHATS_LABEL,
+  START_NEW_CHAT_LABEL,
+} from "utility/constants/messages"
 import { handleCatchError } from "utility/constants/helper"
-import CustomLoaderContainer from "components/CustomLoaderContainer"
 import { RootState } from "store/store"
+import NewChat from "./NewChat"
+import ChatList from "./ChatList"
 
 const useStyles = makeStyles((theme: Theme) => ({
   chatHeadingWrapper: {
@@ -36,6 +41,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     overflowY: "scroll",
     height: "calc(100vh - 220px)",
   },
+  createChatButton: {
+    transition: "all 0.3s !important",
+  },
+  createChatCloseButton: {
+    transform: "rotate(45deg)",
+  },
 }))
 
 const ChatSidebar = () => {
@@ -43,9 +54,8 @@ const ChatSidebar = () => {
   const routeParams = useParams()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const { chatListLoader, chatList } = useAppSelector(
-    (state: RootState) => state.chat
-  )
+  const [isStartNewChat, setIsStartNewChat] = useState(false)
+  const { chatList } = useAppSelector((state: RootState) => state.chat)
 
   useEffect(() => {
     getChatsList()
@@ -53,24 +63,29 @@ const ChatSidebar = () => {
   }, [])
 
   useEffect(() => {
+    setIsStartNewChat(false)
     handleChatSelection()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatList, routeParams.id])
 
+  const toggleStartNewChat = () => {
+    setIsStartNewChat((isStartNewChat) => !isStartNewChat)
+  }
+
   const handleChatSelection = () => {
     const firstChat = chatList.length > 0 ? chatList[0] : null
-    let activeChat: IChatList | null = null
+    let activeChat: IChatList | null = firstChat
     if (routeParams && routeParams.id) {
       const selectedChat = chatList.find(
         (chat: IChatList) => chat._id === routeParams.id
       )
       activeChat = selectedChat || firstChat
-    } else {
-      activeChat = firstChat
     }
+
     if (activeChat) {
       dispatch(setActiveChat(activeChat))
-      navigate(`${AppRoutings.Chats}/${activeChat._id}`)
+      if (!(routeParams && routeParams.id))
+        navigate(`${AppRoutings.Chats}/${activeChat._id}`)
     }
   }
 
@@ -90,20 +105,21 @@ const ChatSidebar = () => {
     <>
       <Box className={classes.chatHeadingWrapper}>
         <Typography variant="h6" className={classes.chatsHeading}>
-          {CHATS_LABEL}
+          {isStartNewChat ? START_NEW_CHAT_LABEL : CHATS_LABEL}
         </Typography>
-        <Tooltip title={CREATE_NEW_CHAT_LABEL}>
-          <IconButton>
+        <Tooltip title={isStartNewChat ? CANCEL_LABEL : START_NEW_CHAT_LABEL}>
+          <IconButton
+            onClick={toggleStartNewChat}
+            className={clsx(classes.createChatButton, {
+              [classes.createChatCloseButton]: isStartNewChat,
+            })}
+          >
             <AddCircleOutlineRoundedIcon color="action" />
           </IconButton>
         </Tooltip>
       </Box>
       <Box className={classes.chatListContainer}>
-        <CustomLoaderContainer isLoading={chatListLoader}>
-          {chatList.map((chatInfo: IChatList) => {
-            return <ChatSidebarCard key={chatInfo._id} chatInfo={chatInfo} />
-          })}
-        </CustomLoaderContainer>
+        {isStartNewChat ? <NewChat /> : <ChatList />}
       </Box>
     </>
   )

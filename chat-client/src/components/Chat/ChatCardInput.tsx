@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from "hooks/storeHook"
 import { RootState } from "store/store"
 import chatService from "services/chat-service"
 import { setMessages, updateMessages } from "store/slices/messageSlice"
-import { socketIo } from "socket/socket"
+import { useSocket } from "socket/socket"
 import { SOCKET_MESSAGE } from "socket/socketEventsConstants"
 import { IMessage } from "utility/interfaces/chat"
 import { encryptMessage, handleCatchError } from "utility/constants/helper"
@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const ChatCardInput = () => {
   const classes = useStyles()
+  const { emit } = useSocket()
   const dispatch = useAppDispatch()
   const [message, setMessage] = useState("")
   const [tempMessageId, setTempMessageId] = useState("")
@@ -81,7 +82,7 @@ const ChatCardInput = () => {
       }
       const response = await chatService.sendMessage(messageDetails)
       setTempMessage(response.data.data)
-      socketIo.emit(SOCKET_MESSAGE, response.data.data)
+      emit(SOCKET_MESSAGE, response.data.data)
     } catch (error: any) {
       handleCatchError(error)
     }

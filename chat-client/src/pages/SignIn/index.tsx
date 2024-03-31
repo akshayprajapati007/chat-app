@@ -25,6 +25,7 @@ import {
   PASSWORD_REQUIRED_MESSAGE,
   SIGN_UP_LABEL,
 } from "utility/constants/messages"
+import { useSocket } from "socket/socket"
 
 const useStyles = makeStyles((theme: Theme) => ({
   formWrapper: {
@@ -87,6 +88,7 @@ const validationSchema = Yup.object({
 
 const SignIn = () => {
   const classes = useStyles()
+  const { initializeSocket } = useSocket()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const [isSigning, setIsSigning] = useState(false)
@@ -100,7 +102,9 @@ const SignIn = () => {
     setIsSigning(true)
     try {
       const res = await AuthService.signIn(values)
-      AuthService.setAuthToken(res.data.token)
+      const authToken = res.data.token
+      initializeSocket(authToken)
+      AuthService.setAuthToken(authToken)
       dispatch(changeUserDetails(res.data.data))
       navigate(AppRoutings.Home)
     } catch (error: any) {

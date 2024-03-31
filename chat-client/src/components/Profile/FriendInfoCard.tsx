@@ -57,7 +57,7 @@ interface IProfileInfoCardProps {
   handleRejectFriendRequest?: (id: string) => void
 }
 
-const ProfileInfoCard = ({
+const FriendInfoCard = ({
   id,
   name,
   type,
@@ -121,4 +121,4 @@ const ProfileInfoCard = ({
   )
 }
 
-export default ProfileInfoCard
+export default FriendInfoCard

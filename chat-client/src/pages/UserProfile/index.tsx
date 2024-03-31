@@ -25,6 +25,7 @@ import {
   SEND_FRIEND_REQUEST_LABEL,
 } from "utility/constants/messages"
 import CustomLoaderContainer from "components/CustomLoaderContainer"
+import chatService from "services/chat-service"
 
 const useStyles = makeStyles((theme: Theme) => ({
   userContentWrapper: {
@@ -56,6 +57,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontSize: "14px !important",
     fontWeight: "500 !important",
   },
+  chatBtn: {
+    width: "fit-content !important",
+  },
 }))
 
 const UserProfile = () => {
@@ -70,6 +74,7 @@ const UserProfile = () => {
   const [isRejectingFriendRequest, setIsRejectingFriendRequest] =
     useState(false)
   const [isRemovingFriend, setIsRemovingFriend] = useState(false)
+  const [isAccessingChat, setIsAccessingChat] = useState(false)
   const [userDetails, setUserDetails] = useState<ISearchUserDetails>({
     ...DEFAULT_USER_INFO,
     friendshipStatus: FriendshipStatus.EMPTY,
@@ -205,13 +210,22 @@ const UserProfile = () => {
 
     if (isFriend) {
       return (
-        <Button
-          color="secondary"
-          isLoading={isRemovingFriend}
-          onClick={handleRemoveFriend}
-        >
-          {REMOVE_FRIEND_LABEL}
-        </Button>
+        <Box display="flex" gap="5px">
+          <Button
+            className={classes.chatBtn}
+            isLoading={isAccessingChat}
+            onClick={handleAccessChat}
+          >
+            Chat
+          </Button>
+          <Button
+            color="secondary"
+            isLoading={isRemovingFriend}
+            onClick={handleRemoveFriend}
+          >
+            {REMOVE_FRIEND_LABEL}
+          </Button>
+        </Box>
       )
     }
 
@@ -249,6 +263,19 @@ const UserProfile = () => {
     }
 
     return null
+  }
+
+  const handleAccessChat = async () => {
+    setIsAccessingChat(true)
+    try {
+      const response = await chatService.accessChat(_id)
+      const { _id: chatId } = response.data.data
+      navigate(`${AppRoutings.Chats}/${chatId}`)
+    } catch (error: any) {
+      handleCatchError(error)
+    } finally {
+      setIsAccessingChat(false)
+    }
   }
 
   return (

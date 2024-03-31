@@ -319,7 +319,7 @@ const Profile = () => {
           )}
         </Formik>
       </Box>
-      <Box mt={5} display="flex" justifyContent="center">
+      <Box mt={5} pb={5} display="flex" justifyContent="center">
         <Box className={classes.friendsListWrapper}>
           <CustomTabs tabs={profileTabs} />
         </Box>

@@ -8,7 +8,7 @@ import NavigatorTree from "components/NavigatorTree"
 import { INavigator } from "utility/interfaces/common"
 import { AppRoutings } from "utility/enums/app-routings"
 import ChatCard from "components/Chat/ChatCard"
-import { socketIo } from "socket/socket"
+import { useSocket } from "socket/socket"
 import { useAppDispatch, useAppSelector } from "hooks/storeHook"
 import { RootState } from "store/store"
 import { SOCKET_JOIN } from "socket/socketEventsConstants"
@@ -37,11 +37,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Chats = () => {
   const classes = useStyles()
+  const { emit } = useSocket()
   const dispatch = useAppDispatch()
   const userDetails = useAppSelector((state: RootState) => state.user)
 
   useEffect(() => {
-    socketIo.emit(SOCKET_JOIN, userDetails._id)
+    emit(SOCKET_JOIN, userDetails._id)
 
     return () => {
       dispatch(resetChatState())

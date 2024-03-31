@@ -7,11 +7,13 @@ import {
   SIGN_OUT_ENDPOINT,
 } from "configs"
 import { ISIgnInPayload, ISignInResponse } from "utility/interfaces/sign-in"
-import { TOKEN_NAME } from "utility/constants"
+import {
+  PERSIST_STORE_PREFIX_KEY,
+  TOKEN_NAME,
+  USER_SLICE_KEY,
+} from "utility/constants"
 import { AppRoutings } from "utility/enums/app-routings"
 import httpClient from "services/base-service"
-import store from "store/store"
-import { resetUserDetails } from "store/slices/userSlice"
 
 const getAuthToken = (): string | undefined => Cookies.get(TOKEN_NAME)
 
@@ -39,7 +41,8 @@ const signOut = () => {
 
 const terminateLocalSession = () => {
   Cookies.remove(TOKEN_NAME)
-  store.dispatch(resetUserDetails())
+  localStorage.removeItem(`${PERSIST_STORE_PREFIX_KEY}${USER_SLICE_KEY}`)
+  //store.dispatch(resetUserDetails())
   redirectToLoginPage()
 }
 

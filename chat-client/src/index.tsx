@@ -9,6 +9,7 @@ import TopLoadingBar from "components/TopLoadingBar"
 import store, { persistor } from "store/store"
 import { Provider } from "react-redux"
 import { PersistGate } from "redux-persist/integration/react"
+import { SocketProvider } from "socket/socket"
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 root.render(
@@ -18,7 +19,9 @@ root.render(
       <Suspense fallback={<TopLoadingBar />}>
         <Provider store={store}>
           <PersistGate loading={<TopLoadingBar />} persistor={persistor}>
-            <App />
+            <SocketProvider>
+              <App />
+            </SocketProvider>
           </PersistGate>
         </Provider>
       </Suspense>

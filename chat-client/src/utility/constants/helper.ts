@@ -1,6 +1,5 @@
 import { toast } from "react-toastify"
 import CryptoJS from "crypto-js"
-import { SOMETHING_WENT_WRONG_MESSAGE } from "./messages"
 import { CHAT_SECRET_KEY } from "configs"
 
 export const fileToBase64 = (file: any) => {
@@ -25,19 +24,15 @@ export const handleCatchError = (error: any) => {
       error.response.data &&
       error.response.data.error
     ) {
-      return error.response.data.error
-    } else {
-      return SOMETHING_WENT_WRONG_MESSAGE
+      toast.error(error.response.data.error)
     }
   }
 
   console.error("error", error)
-  const errorMessage = extractErrorMessage(error)
-  toast.error(errorMessage)
+  extractErrorMessage(error)
 }
 
 export const encryptMessage = (message: string) => {
-  console.log(CHAT_SECRET_KEY)
   const cipherText = CryptoJS.AES.encrypt(message, CHAT_SECRET_KEY).toString()
   return cipherText
 }

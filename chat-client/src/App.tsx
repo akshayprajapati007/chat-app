@@ -1,9 +1,10 @@
-import { useEffect } from "react"
 import { Box, ThemeProvider } from "@mui/material"
 import { styled } from "@mui/styles"
 import { theme } from "configs/theme"
 import Routes from "components/Routes"
-import { socketIo } from "socket/socket"
+import { useEffect } from "react"
+import { useSocket } from "socket/socket"
+import authService from "services/auth-service"
 
 const MainContainer = styled(Box)({
   display: "flex",
@@ -12,11 +13,15 @@ const MainContainer = styled(Box)({
 })
 
 function App() {
+  const { initializeSocket } = useSocket()
   useEffect(() => {
-    return () => {
-      socketIo.disconnect()
+    const isValidSession = authService.isCurrentSessionValid()
+    if (isValidSession) {
+      const token = authService.getAuthToken()
+      initializeSocket(token as string)
     }
-  })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <MainContainer>

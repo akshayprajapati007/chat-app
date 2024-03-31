@@ -2,20 +2,17 @@ import { useState, useEffect } from "react"
 import { Grid } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 import userService from "services/user-service"
-import FriendInfoCard from "./ProfileInfoCard"
+import FriendInfoCard from "./FriendInfoCard"
 import { IUserDetails } from "utility/interfaces/common"
 import { EMPTY_FRIENDS_LIST_MESSAGE } from "utility/constants/messages"
 import ProfileList from "./ProfileList"
 import { FriendInfoCardTypes } from "utility/enums/common"
 import chatService from "services/chat-service"
-import { useAppSelector } from "hooks/storeHook"
-import { RootState } from "store/store"
 import { AppRoutings } from "utility/enums/app-routings"
 import { handleCatchError } from "utility/constants/helper"
 
 const FriendsList = () => {
   const navigate = useNavigate()
-  const userDetails = useAppSelector((state: RootState) => state.user)
   const [loading, setLoading] = useState(false)
   const [friendsList, setFriendsList] = useState<IUserDetails[]>([])
 
@@ -35,25 +32,19 @@ const FriendsList = () => {
     }
   }
 
-  const handleAccessChat = async (id: string) => {
+  const handleAccessChat = async (userId: string) => {
     try {
-      const response = await chatService.accessChat(id)
-      const { users } = response.data.data
-      const targetUser = users.filter(
-        (user: IUserDetails) => user._id !== userDetails._id
-      )
-      if (targetUser.length > 0) {
-        const { _id } = targetUser[0]
-        navigate(`${AppRoutings.Chats}/${_id}`)
-      }
+      const response = await chatService.accessChat(userId)
+      const { _id } = response.data.data
+      navigate(`${AppRoutings.Chats}/${_id}`)
     } catch (error: any) {
       handleCatchError(error)
     }
   }
 
-  const handleRemoveFriend = async (id: string) => {
+  const handleRemoveFriend = async (userId: string) => {
     try {
-      await userService.removeFriend(id)
+      await userService.removeFriend(userId)
       getFriendsList()
     } catch (error: any) {
       handleCatchError(error)

@@ -29,6 +29,7 @@ import {
   RESEND_OTP_LABEL,
   VERIFY_LABEL,
 } from "utility/constants/messages"
+import { useSocket } from "socket/socket"
 
 const useStyles = makeStyles((theme: Theme) => ({
   formWrapper: {
@@ -104,6 +105,7 @@ const AccountVerification = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const { initializeSocket } = useSocket()
 
   const [isVerifying, setIsVerifying] = useState(false)
   const [isSendingOTP, setIsSendingOTP] = useState(false)
@@ -167,6 +169,8 @@ const AccountVerification = () => {
         email: location.state.email,
       })
       if (res.data.success) {
+        const authToken = res.data.token
+        initializeSocket(authToken)
         AuthService.setAuthToken(res.data.token)
         dispatch(changeUserDetails(res.data.data))
         navigate(AppRoutings.Home)

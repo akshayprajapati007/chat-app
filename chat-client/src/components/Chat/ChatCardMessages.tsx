@@ -9,12 +9,9 @@ import { useAppDispatch, useAppSelector } from "hooks/storeHook"
 import chatService from "services/chat-service"
 import CustomLoaderContainer from "components/CustomLoaderContainer"
 import { IMessage } from "utility/interfaces/chat"
-import { setMessages, updateMessages } from "store/slices/messageSlice"
-import { socketIo } from "socket/socket"
-import {
-  SOCKET_JOIN_ROOM,
-  SOCKET_MESSAGE_RECEIVED,
-} from "socket/socketEventsConstants"
+import { setMessages } from "store/slices/messageSlice"
+import { useSocket } from "socket/socket"
+import { SOCKET_JOIN_ROOM } from "socket/socketEventsConstants"
 import { decryptMessage, handleCatchError } from "utility/constants/helper"
 import { NO_MESSAGES_LABEL } from "utility/constants/messages"
 
@@ -59,6 +56,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ChatCardMessages = () => {
   const classes = useStyles()
   const lastMessageRef = useRef<HTMLDivElement>(null)
+  const { emit } = useSocket()
   const dispatch = useAppDispatch()
   const [isLoading, setIsLoading] = useState(false)
   const userDetails = useAppSelector((state: RootState) => state.user)
@@ -71,25 +69,9 @@ const ChatCardMessages = () => {
   }, [activeChat._id])
 
   useEffect(() => {
-    const handleSocketMessageReceived = (newMessage: IMessage) => {
-      if (newMessage.chat === activeChat._id) {
-        dispatch(updateMessages(newMessage))
-      }
-    }
-
-    socketIo.on(SOCKET_MESSAGE_RECEIVED, handleSocketMessageReceived)
-
-    return () => {
-      socketIo.off(SOCKET_MESSAGE_RECEIVED, handleSocketMessageReceived)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeChat._id])
-
-  useEffect(() => {
     setTimeout(() => {
       if (lastMessageRef.current) {
         lastMessageRef.current.scrollIntoView({
-          behavior: "smooth",
           block: "end",
         })
       }
@@ -101,7 +83,7 @@ const ChatCardMessages = () => {
       setIsLoading(true)
       const response = await chatService.getMessages(activeChat._id)
       dispatch(setMessages(response.data.data))
-      socketIo.emit(SOCKET_JOIN_ROOM, activeChat._id)
+      emit(SOCKET_JOIN_ROOM, activeChat._id)
     } catch (error: any) {
       handleCatchError(error)
     } finally {

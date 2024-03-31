@@ -27,6 +27,9 @@ export const chatSlice = createSlice({
     setChatList: (state: ChatState, action: PayloadAction<IChatList[]>) => {
       state.chatList = action.payload
     },
+    updateChatList: (state: ChatState, action: PayloadAction<IChatList>) => {
+      state.chatList = [action.payload, ...state.chatList]
+    },
     resetActiveChat: (state: ChatState) => {
       state.activeChat = initialState.activeChat
     },
@@ -43,6 +46,7 @@ export const {
   setChatListLoader,
   setActiveChat,
   setChatList,
+  updateChatList,
   resetActiveChat,
   resetChatList,
   resetChatState,

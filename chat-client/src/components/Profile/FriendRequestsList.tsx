@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { Grid } from "@mui/material"
 import userService from "services/user-service"
-import FriendInfoCard from "./ProfileInfoCard"
+import FriendInfoCard from "./FriendInfoCard"
 import { IUserDetails } from "utility/interfaces/common"
 import { EMPTY_FRIEND_REQUESTS_LIST_MESSAGE } from "utility/constants/messages"
 import ProfileList from "./ProfileList"
