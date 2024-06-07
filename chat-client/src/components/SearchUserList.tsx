@@ -28,15 +28,17 @@ const useStyles = makeStyles({
     color: "#000",
     width: "100%",
     maxHeight: "250px",
-    borderRadius: "5px",
+    borderRadius: "20px",
+    overflow: "hidden",
     backgroundColor: "#fff",
     zIndex: 1,
     boxShadow: "0 2px 18px 4px rgba(176, 176, 176, 0.22)",
   },
   searchField: {
-    width: "350px",
+    width: "300px",
     "& > div": {
-      padding: "8px 10px",
+      borderRadius: "20px",
+      padding: "7px 10px",
     },
     "& fieldset": {
       borderColor: "transparent !important",

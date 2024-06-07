@@ -6,6 +6,7 @@ import {
   Grid,
   Typography,
   Avatar,
+  Hidden,
 } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import ExitToAppRoundedIcon from "@mui/icons-material/ExitToAppRounded"
@@ -73,10 +74,12 @@ const Navbar: () => JSX.Element = () => {
             </Grid>
             {isLoggedIn && (
               <>
-                <Grid item xs={4} sm={4} lg={6}>
-                  <SearchUserList />
-                </Grid>
-                <Grid item xs={5} sm={4} lg={3}>
+                <Hidden smDown>
+                  <Grid item xs={4} sm={4} lg={6}>
+                    <SearchUserList />
+                  </Grid>
+                </Hidden>
+                <Grid item xs={9} sm={4} lg={3}>
                   <Grid
                     container
                     spacing={{ xs: 2, md: 3 }}

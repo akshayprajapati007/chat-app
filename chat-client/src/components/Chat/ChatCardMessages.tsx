@@ -64,9 +64,17 @@ const ChatCardMessages = () => {
   const { messages } = useAppSelector((state: RootState) => state.message)
 
   useEffect(() => {
-    getMessages()
+    handleGetMessages()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeChat._id])
+  }, [activeChat])
+
+  const handleGetMessages = () => {
+    if (activeChat._id) {
+      getMessages()
+    } else {
+      dispatch(setMessages([]))
+    }
+  }
 
   useEffect(() => {
     setTimeout(() => {

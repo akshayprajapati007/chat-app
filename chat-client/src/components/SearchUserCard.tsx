@@ -27,7 +27,6 @@ const useStyles = makeStyles({
     justifyContent: "space-between",
     gap: "10px",
     padding: "10px 12px",
-    borderRadius: "5px",
     borderBottom: "1.5px solid #f0f0f0",
   },
   profileWrapper: {

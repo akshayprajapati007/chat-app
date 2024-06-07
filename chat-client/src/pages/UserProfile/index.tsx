@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Box, Container, Avatar, Typography } from "@mui/material"
+import { Box, Container, Typography } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import { Theme } from "@mui/material/styles"
 import { useParams, useNavigate } from "react-router-dom"
@@ -26,6 +26,7 @@ import {
 } from "utility/constants/messages"
 import CustomLoaderContainer from "components/CustomLoaderContainer"
 import chatService from "services/chat-service"
+import ProfileImageViewer from "components/Profile/ProfileImageViewer"
 
 const useStyles = makeStyles((theme: Theme) => ({
   userContentWrapper: {
@@ -36,13 +37,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: "30px",
     flexWrap: "wrap",
     boxShadow: "0 2px 18px 4px rgba(176, 176, 176, 0.22)",
-  },
-  profileImage: {
-    boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+    "@media (max-width: 484px)": {
+      justifyContent: "center",
+    },
   },
   name: {
     fontSize: "1.9rem !important",
     fontWeight: "600 !important",
+    "@media (max-width: 484px)": {
+      textAlign: "center",
+    },
   },
   friendText: {
     color: "#fff",
@@ -56,9 +60,27 @@ const useStyles = makeStyles((theme: Theme) => ({
     opacity: "0.6",
     fontSize: "14px !important",
     fontWeight: "500 !important",
+    "@media (max-width: 484px)": {
+      textAlign: "center",
+    },
   },
   chatBtn: {
     width: "fit-content !important",
+    "@media (max-width: 484px)": {
+      width: "100% !important",
+    },
+  },
+  buttonsWrapper: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    "& button": {
+      width: "100%",
+    },
+    "@media (max-width: 484px)": {
+      justifyContent: "center",
+      flexWrap: "wrap",
+    },
   },
 }))
 
@@ -210,7 +232,7 @@ const UserProfile = () => {
 
     if (isFriend) {
       return (
-        <Box display="flex" gap="5px">
+        <Box className={classes.buttonsWrapper}>
           <Button
             className={classes.chatBtn}
             isLoading={isAccessingChat}
@@ -231,7 +253,7 @@ const UserProfile = () => {
 
     if (isFriendRequest) {
       return (
-        <Box display="flex" gap="10px">
+        <Box className={classes.buttonsWrapper}>
           <Button
             isLoading={isAcceptingFriendRequest}
             onClick={handleAcceptFriendRequest}
@@ -290,13 +312,9 @@ const UserProfile = () => {
             <NavigatorTree navigators={navigators} />
             <Box paddingY={3}>
               <Box className={classes.userContentWrapper}>
-                <Avatar
-                  src={profileImage}
-                  sx={{ width: 120, height: 120 }}
-                  className={classes.profileImage}
-                />
+                <ProfileImageViewer profileImage={profileImage} />
                 <Box>
-                  <Box display="flex" alignItems="center" gap="8px">
+                  <Box className={classes.buttonsWrapper}>
                     <Typography className={classes.name}>
                       {firstName} {lastName}
                     </Typography>

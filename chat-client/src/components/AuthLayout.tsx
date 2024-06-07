@@ -1,4 +1,4 @@
-import { Container, Box, Typography, Grid } from "@mui/material"
+import { Container, Box, Typography, Grid, Hidden } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import { Theme } from "@mui/material/styles"
 import { WELCOME_TO_LABEL } from "utility/constants/messages"
@@ -46,27 +46,29 @@ const AuthLayout = ({ children }: any) => {
   return (
     <Container maxWidth="lg" className={classes.spaceContainer}>
       <Box className={classes.mainWrapper}>
-        <Grid container spacing={2}>
-          <Grid item xs={5}>
-            <Box className={classes.headingWrapper}>
-              <Typography variant="h2" align="center">
-                {WELCOME_TO_LABEL}
-              </Typography>
-              <Typography
-                className={classes.leftSiteHeading}
-                variant="h2"
-                align="center"
-              >
-                {BRAND_LABEL}
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={2}>
-            <Box className={classes.separatorWrapper}>
-              <Box className={classes.separator} />
-            </Box>
-          </Grid>
-          <Grid item xs={5}>
+        <Grid container spacing={2} justifyContent="center">
+          <Hidden mdDown>
+            <Grid item md={5}>
+              <Box className={classes.headingWrapper}>
+                <Typography variant="h2" align="center">
+                  {WELCOME_TO_LABEL}
+                </Typography>
+                <Typography
+                  className={classes.leftSiteHeading}
+                  variant="h2"
+                  align="center"
+                >
+                  {BRAND_LABEL}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item md={2}>
+              <Box className={classes.separatorWrapper}>
+                <Box className={classes.separator} />
+              </Box>
+            </Grid>
+          </Hidden>
+          <Grid item xs={11} sm={8} md={5}>
             {children}
           </Grid>
         </Grid>

@@ -38,7 +38,7 @@ export const theme = createTheme({
     MuiToolbar: {
       styleOverrides: {
         gutters: {
-          padding: "8px 14px",
+          padding: "10px 14px",
           minHeight: "auto !important",
         },
       },

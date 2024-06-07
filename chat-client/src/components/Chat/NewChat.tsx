@@ -1,5 +1,5 @@
-import { Avatar, Box, Typography } from "@mui/material"
 import { useEffect, useMemo, useRef, useState } from "react"
+import { Avatar, Box, CircularProgress, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 import { makeStyles } from "@mui/styles"
 import { Theme } from "@mui/material/styles"
@@ -12,7 +12,8 @@ import { AppRoutings } from "utility/enums/app-routings"
 import { IUserDetails } from "utility/interfaces/common"
 import CustomLoaderContainer from "components/CustomLoaderContainer"
 import { updateChatList } from "store/slices/chatSlice"
-import { useAppDispatch } from "hooks/storeHook"
+import { useAppDispatch, useAppSelector } from "hooks/storeHook"
+import { RootState } from "store/store"
 
 const useStyles = makeStyles((theme: Theme) => ({
   mainWrapper: {
@@ -41,6 +42,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     "& > h6": {
       fontSize: "1rem",
+      flex: 1,
     },
   },
 }))
@@ -50,8 +52,10 @@ const NewChat = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const [loading, setLoading] = useState(false)
+  const [creatingChatId, setCreatingChatId] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const searchFieldRef = useRef<HTMLInputElement>(null)
+  const { chatList } = useAppSelector((state: RootState) => state.chat)
   const [tempFriendsList, setTempFriendsList] = useState<IUserDetails[]>([])
   const [friendsList, setFriendsList] = useState<IUserDetails[]>([])
 
@@ -81,14 +85,28 @@ const NewChat = () => {
     }
   }
 
+  const handleNewChat = (userId: string) => {
+    const existingChat = chatList.find((chat) =>
+      chat.users.some((user) => user._id === userId)
+    )
+    if (existingChat) {
+      navigate(`${AppRoutings.Chats}/${existingChat._id}`)
+      return
+    }
+    handleAccessChat(userId)
+  }
+
   const handleAccessChat = async (userId: string) => {
     try {
+      setCreatingChatId(userId)
       const response = await chatService.accessChat(userId)
       const { _id } = response.data.data
       dispatch(updateChatList(response.data.data))
       navigate(`${AppRoutings.Chats}/${_id}`)
     } catch (error: any) {
       handleCatchError(error)
+    } finally {
+      setCreatingChatId(null)
     }
   }
 
@@ -117,6 +135,7 @@ const NewChat = () => {
         inputProps={{
           ref: searchFieldRef,
         }}
+        disabled={!!creatingChatId}
         id="search-friends"
         placeholder="Search friends..."
         onChange={handleSearchValueChange}
@@ -130,10 +149,11 @@ const NewChat = () => {
               <Box
                 key={_id}
                 className={classes.friendInfoWrapper}
-                onClick={() => handleAccessChat(_id)}
+                onClick={() => handleNewChat(_id)}
               >
                 <Avatar src={profileImage} />
                 <Typography variant="h6">{fullName}</Typography>
+                {creatingChatId === _id && <CircularProgress size={16} />}
               </Box>
             )
           })}
