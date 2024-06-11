@@ -38,7 +38,17 @@ export const encryptMessage = (message: string) => {
 }
 
 export const decryptMessage = (cipherText: string) => {
-  const bytes = CryptoJS.AES.decrypt(cipherText, CHAT_SECRET_KEY)
-  const decryptedMessage = bytes.toString(CryptoJS.enc.Utf8)
-  return decryptedMessage
+  try {
+    const bytes = CryptoJS.AES.decrypt(cipherText, CHAT_SECRET_KEY)
+    const decryptedMessage = bytes.toString(CryptoJS.enc.Utf8)
+
+    if (!decryptedMessage) {
+      throw new Error("Decryption failed")
+    }
+
+    return decryptedMessage
+  } catch (error: any) {
+    console.error("Error decrypting message:", error.message)
+    return null
+  }
 }
