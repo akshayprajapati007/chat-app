@@ -6,6 +6,7 @@ const {
   handleRemoveFriend,
   friendsList,
   friendRequestsList,
+  getUserDetailsByChatId,
 } = require("./users.controller")
 const { validateToken } = require("../../jwt")
 const AppRoutings = require("../../utility/app-routings")
@@ -13,6 +14,11 @@ const AppRoutings = require("../../utility/app-routings")
 const usersRouter = express.Router()
 
 usersRouter.get(AppRoutings.GetUserDetails, validateToken, handleGetUserDetails)
+usersRouter.get(
+  AppRoutings.GetUserByChatId,
+  validateToken,
+  getUserDetailsByChatId
+)
 usersRouter.get(AppRoutings.searchUsers, validateToken, handleSearchUserByName)
 usersRouter.get(AppRoutings.friends, validateToken, friendsList)
 usersRouter.get(

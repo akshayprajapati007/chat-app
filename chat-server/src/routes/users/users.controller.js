@@ -2,6 +2,7 @@ const {
   findUserByName,
   findUserByEmail,
   getUserProfileById,
+  findUserById,
 } = require("../../model/users/users.model")
 const {
   createFriendRequest,
@@ -13,6 +14,7 @@ const {
   getFriendRequestsList,
 } = require("../../model/friends/friends.model")
 const FriendshipStatus = require("../../utility/friendship-status")
+const { findChatById } = require("../../model/chats/chats.model")
 
 const handleGetUserDetails = async (req, res) => {
   try {
@@ -159,6 +161,37 @@ const friendRequestsList = async (req, res) => {
   }
 }
 
+const getUserDetailsByChatId = async (req, res) => {
+  const { _id } = req.user
+  const { chatId } = req.params
+
+  try {
+    const chatDetails = await findChatById(chatId)
+    if (chatDetails) {
+      const { users } = chatDetails
+      const recipientId = users.filter(
+        (userId) => userId.toString() !== _id.toString()
+      )
+      const user = await findUserById(recipientId)
+      return res.status(200).json({
+        success: true,
+        data: user,
+      })
+    } else {
+      return res.status(400).json({
+        error: "Invalid chat",
+        success: false,
+      })
+    }
+  } catch (err) {
+    console.log("error", err)
+    return res.status(500).json({
+      success: false,
+      data: err,
+    })
+  }
+}
+
 module.exports = {
   handleGetUserDetails,
   handleSearchUserByName,
@@ -166,4 +199,5 @@ module.exports = {
   handleRemoveFriend,
   friendsList,
   friendRequestsList,
+  getUserDetailsByChatId,
 }

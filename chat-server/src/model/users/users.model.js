@@ -13,6 +13,15 @@ const findUserByEmail = async (email) => {
   return user
 }
 
+const findUserById = async (userId) => {
+  try {
+    const user = await users.findById(userId).select("-__v")
+    return user
+  } catch (error) {
+    throw error
+  }
+}
+
 const findUserByName = async (email, searchQuery, page, perPage) => {
   const regex = new RegExp(searchQuery, "i")
   const skip = (page - 1) * perPage
@@ -192,6 +201,7 @@ const updateUser = async (email, userDetails) => {
 module.exports = {
   getAllUsers,
   findUserByEmail,
+  findUserById,
   findUserByName,
   getUserProfileById,
   registerUser,
