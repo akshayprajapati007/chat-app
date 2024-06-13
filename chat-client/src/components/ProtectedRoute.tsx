@@ -1,20 +1,23 @@
 import React, { useLayoutEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import authService from "services/auth-service"
-import SignIn from "pages/SignIn"
 import { AppRoutings } from "utility/enums/app-routings"
 import { IS_DEVELOPMENT_MODE, LOGIN_URL } from "configs"
 
-const ProtectedRoute: React.FC<any> = ({ children }) => {
-  const [isPageAccessible, setIsPageAccessible] = useState(false)
+interface ProtectedRouteProps {
+  children: React.ReactNode
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const [isPageAccessible, setIsPageAccessible] = useState<boolean | null>(null)
   const navigate = useNavigate()
 
   const redirectToTheSignInScreen = (): void => {
     if (IS_DEVELOPMENT_MODE) {
       navigate(AppRoutings.SignIn)
-      return
+    } else {
+      window.location.href = LOGIN_URL as string
     }
-    window.location.href = LOGIN_URL as string
   }
 
   useLayoutEffect(() => {
@@ -25,9 +28,13 @@ const ProtectedRoute: React.FC<any> = ({ children }) => {
       redirectToTheSignInScreen()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [navigate])
 
-  return isPageAccessible ? children : <SignIn />
+  if (isPageAccessible === null) {
+    return null
+  }
+
+  return isPageAccessible ? <>{children}</> : null
 }
 
 export default ProtectedRoute
