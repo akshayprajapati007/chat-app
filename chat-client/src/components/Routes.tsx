@@ -10,6 +10,7 @@ const Profile = lazy(() => import("pages/Profile"))
 const UserProfile = lazy(() => import("pages/UserProfile"))
 const Chats = lazy(() => import("pages/Chats"))
 const SignUp = lazy(() => import("pages/SignUp"))
+const Search = lazy(() => import("pages/Search"))
 const AccountVerification = lazy(() => import("pages/AccountVerification"))
 
 const RoutesList = [
@@ -51,6 +52,11 @@ const RoutesList = [
   {
     path: AppRoutings.UserId,
     component: <UserProfile />,
+    isProtectedRoute: true,
+  },
+  {
+    path: AppRoutings.Search,
+    component: <Search />,
     isProtectedRoute: true,
   },
 ]

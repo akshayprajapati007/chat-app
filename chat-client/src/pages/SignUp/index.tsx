@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material"
 import * as Yup from "yup"
 import { Formik, Form } from "formik"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { makeStyles } from "@mui/styles"
 import { Theme } from "@mui/material/styles"
 import { Link, useNavigate } from "react-router-dom"
@@ -24,6 +24,7 @@ import {
   SIGN_UP_LABEL,
 } from "utility/constants/messages"
 import { BRAND_LABEL } from "utility/constants"
+import AuthService from "services/auth-service"
 
 const useStyles = makeStyles((theme: Theme) => ({
   formWrapper: {
@@ -97,6 +98,14 @@ const SignUp = () => {
     email: "",
     password: "",
   }
+
+  useEffect(() => {
+    const isLoggedIn = AuthService.isCurrentSessionValid()
+    if (isLoggedIn) {
+      navigate(-1)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleSignUp = async (values: ISignUpValues) => {
     setIsSigningUp(true)

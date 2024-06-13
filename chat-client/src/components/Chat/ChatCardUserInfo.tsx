@@ -1,15 +1,23 @@
 import { useEffect, useState } from "react"
-import { Box, Avatar, Typography, IconButton, Hidden } from "@mui/material"
+import {
+  Box,
+  Avatar,
+  Typography,
+  IconButton,
+  Hidden,
+  Skeleton,
+} from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import { Theme } from "@mui/material/styles"
 import { ArrowBackIosRounded } from "@mui/icons-material"
-import { Link, useNavigate } from "react-router-dom"
-import { useAppDispatch, useAppSelector } from "hooks/storeHook"
+import { Link, useNavigate, useParams } from "react-router-dom"
+import { useAppSelector } from "hooks/storeHook"
 import { RootState } from "store/store"
 import { IUserDetails } from "utility/interfaces/common"
 import { DEFAULT_USER_INFO } from "utility/constants"
 import { AppRoutings } from "utility/enums/app-routings"
-import { resetActiveChat } from "store/slices/chatSlice"
+import userService from "services/user-service"
+import { handleCatchError } from "utility/constants/helper"
 
 const useStyles = makeStyles((theme: Theme) => ({
   linkTag: {
@@ -34,29 +42,52 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ChatCardUserInfo = () => {
   const classes = useStyles()
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
+  const { chatId } = useParams()
+  const [isLoading, setIsLoading] = useState(false)
   const [userInfo, setUserInfo] = useState<IUserDetails>(DEFAULT_USER_INFO)
   const userDetails = useAppSelector((state: RootState) => state.user)
-  const { activeChat } = useAppSelector((state: RootState) => state.chat)
 
   useEffect(() => {
-    if (userDetails && activeChat) {
-      const user = activeChat.users.filter(
-        (user) => user._id !== userDetails._id
-      )
-      user.length > 0 && setUserInfo(user[0])
+    if (userDetails && chatId) {
+      getUserDetails()
+    }
+
+    return () => {
+      setUserInfo(DEFAULT_USER_INFO)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userDetails._id, activeChat._id])
+  }, [userDetails._id, chatId])
+
+  const getUserDetails = async () => {
+    try {
+      setIsLoading(true)
+      const data = await userService.getUserByChatId(chatId as string)
+      const {
+        data: {
+          data: { _id, email, firstName, lastName, profileImage },
+        },
+      } = data
+      setUserInfo({
+        _id,
+        firstName,
+        lastName,
+        email,
+        profileImage,
+      })
+    } catch (error) {
+      handleCatchError(error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleRedirectChatList = () => {
-    dispatch(resetActiveChat())
     navigate(AppRoutings.Chats)
   }
 
   return (
     <Box className={classes.mainWrapper}>
-      <Hidden smUp>
+      <Hidden mdUp>
         <IconButton onClick={handleRedirectChatList}>
           <ArrowBackIosRounded />
         </IconButton>
@@ -66,11 +97,19 @@ const ChatCardUserInfo = () => {
         className={classes.linkTag}
       >
         <Box className={classes.contentWrapper}>
-          <Avatar src={userInfo.profileImage} />
+          {isLoading ? (
+            <Skeleton variant="circular" width={40} height={40} />
+          ) : (
+            <Avatar src={userInfo.profileImage} />
+          )}
           <Box>
-            <Typography variant="h6">
-              {userInfo.firstName} {userInfo.lastName}
-            </Typography>
+            {isLoading ? (
+              <Skeleton variant="rounded" width={210} height={20} />
+            ) : (
+              <Typography variant="h6">
+                {userInfo.firstName} {userInfo.lastName}
+              </Typography>
+            )}
           </Box>
         </Box>
       </Link>

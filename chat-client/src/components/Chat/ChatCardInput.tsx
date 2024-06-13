@@ -13,6 +13,7 @@ import { useSocket } from "socket/socket"
 import { SOCKET_MESSAGE } from "socket/socketEventsConstants"
 import { IMessage } from "utility/interfaces/chat"
 import { encryptMessage, handleCatchError } from "utility/constants/helper"
+import { useParams } from "react-router-dom"
 
 const useStyles = makeStyles((theme: Theme) => ({
   mainWrapper: {
@@ -33,12 +34,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ChatCardInput = () => {
   const classes = useStyles()
   const { emit } = useSocket()
+  const { chatId } = useParams()
   const dispatch = useAppDispatch()
   const [message, setMessage] = useState("")
   const [tempMessageId, setTempMessageId] = useState("")
   const [tempMessage, setTempMessage] = useState<IMessage | null>(null)
   const userDetails = useAppSelector((state: RootState) => state.user)
-  const { activeChat } = useAppSelector((state: RootState) => state.chat)
   const { messages } = useAppSelector((state: RootState) => state.message)
 
   useEffect(() => {
@@ -71,14 +72,14 @@ const ChatCardInput = () => {
         sender: userDetails._id,
         createdAt: optimisticMessageId,
         updatedAt: optimisticMessageId,
-        chat: activeChat._id,
+        chat: chatId as string,
       }
       handleLocalUpdateMessage(optimisticMessage)
       setTempMessageId(optimisticMessageId)
 
       const messageDetails = {
         message: encryptedMessage,
-        chatId: activeChat._id,
+        chatId: chatId as string,
       }
       const response = await chatService.sendMessage(messageDetails)
       setTempMessage(response.data.data)

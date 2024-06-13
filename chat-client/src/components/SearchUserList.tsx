@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react"
+import React, { useState, useEffect, useMemo, useRef } from "react"
 import {
   Box,
   InputAdornment,
@@ -21,6 +21,10 @@ const useStyles = makeStyles({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    minWidth: "290px",
+    "& > div": {
+      width: "100%",
+    },
   },
   usersListWrapper: {
     position: "absolute",
@@ -35,7 +39,6 @@ const useStyles = makeStyles({
     boxShadow: "0 2px 18px 4px rgba(176, 176, 176, 0.22)",
   },
   searchField: {
-    width: "300px",
     "& > div": {
       borderRadius: "20px",
       padding: "7px 10px",
@@ -79,9 +82,12 @@ const useStyles = makeStyles({
   },
 })
 
-const SearchUserList = () => {
-  const classes = useStyles()
+interface ISearchUserListProps {
+  isMobileScreenSearch?: boolean
+}
 
+const SearchUserList = ({ isMobileScreenSearch }: ISearchUserListProps) => {
+  const classes = useStyles()
   const searchRef = useRef<HTMLInputElement>()
   const [search, setSearch] = useState("")
   const [isSearching, setIsSearching] = useState(false)
@@ -139,6 +145,7 @@ const SearchUserList = () => {
         <TextField
           value={search}
           inputRef={searchRef}
+          fullWidth={isMobileScreenSearch}
           onChange={handleSearchValueChange}
           autoComplete="off"
           placeholder="Search..."
@@ -197,4 +204,4 @@ const SearchUserList = () => {
   )
 }
 
-export default SearchUserList
+export default React.memo(SearchUserList)

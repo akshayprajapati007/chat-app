@@ -14,6 +14,7 @@ import { useSocket } from "socket/socket"
 import { SOCKET_JOIN_ROOM } from "socket/socketEventsConstants"
 import { decryptMessage, handleCatchError } from "utility/constants/helper"
 import { NO_MESSAGES_LABEL } from "utility/constants/messages"
+import { useParams } from "react-router-dom"
 
 const useStyles = makeStyles((theme: Theme) => ({
   mainWrapper: {
@@ -55,21 +56,21 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const ChatCardMessages = () => {
   const classes = useStyles()
-  const lastMessageRef = useRef<HTMLDivElement>(null)
   const { emit } = useSocket()
   const dispatch = useAppDispatch()
+  const { chatId } = useParams()
   const [isLoading, setIsLoading] = useState(false)
+  const lastMessageRef = useRef<HTMLDivElement>(null)
   const userDetails = useAppSelector((state: RootState) => state.user)
-  const { activeChat } = useAppSelector((state: RootState) => state.chat)
   const { messages } = useAppSelector((state: RootState) => state.message)
 
   useEffect(() => {
     handleGetMessages()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeChat])
+  }, [chatId])
 
   const handleGetMessages = () => {
-    if (activeChat._id) {
+    if (chatId) {
       getMessages()
     } else {
       dispatch(setMessages([]))
@@ -89,9 +90,9 @@ const ChatCardMessages = () => {
   const getMessages = async () => {
     try {
       setIsLoading(true)
-      const response = await chatService.getMessages(activeChat._id)
+      const response = await chatService.getMessages(chatId as string)
       dispatch(setMessages(response.data.data))
-      emit(SOCKET_JOIN_ROOM, activeChat._id)
+      emit(SOCKET_JOIN_ROOM, chatId)
     } catch (error: any) {
       handleCatchError(error)
     } finally {

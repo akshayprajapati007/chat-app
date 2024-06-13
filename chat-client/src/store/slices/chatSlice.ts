@@ -4,13 +4,11 @@ import { IChatList } from "utility/interfaces/chat"
 
 interface ChatState {
   chatListLoader: boolean
-  activeChat: IChatList
   chatList: IChatList[]
 }
 
 const initialState: ChatState = {
   chatListLoader: false,
-  activeChat: { _id: "", users: [], createdAt: "", updatedAt: "" },
   chatList: [],
 }
 
@@ -21,17 +19,11 @@ export const chatSlice = createSlice({
     setChatListLoader: (state: ChatState, action: PayloadAction<boolean>) => {
       state.chatListLoader = action.payload
     },
-    setActiveChat: (state: ChatState, action: PayloadAction<IChatList>) => {
-      state.activeChat = action.payload
-    },
     setChatList: (state: ChatState, action: PayloadAction<IChatList[]>) => {
       state.chatList = action.payload
     },
     updateChatList: (state: ChatState, action: PayloadAction<IChatList>) => {
       state.chatList = [action.payload, ...state.chatList]
-    },
-    resetActiveChat: (state: ChatState) => {
-      state.activeChat = initialState.activeChat
     },
     resetChatList: (state: ChatState) => {
       state.chatList = initialState.chatList
@@ -44,10 +36,8 @@ export const chatSlice = createSlice({
 
 export const {
   setChatListLoader,
-  setActiveChat,
   setChatList,
   updateChatList,
-  resetActiveChat,
   resetChatList,
   resetChatState,
 } = chatSlice.actions

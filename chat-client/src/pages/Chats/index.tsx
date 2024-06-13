@@ -9,11 +9,9 @@ import { INavigator } from "utility/interfaces/common"
 import { AppRoutings } from "utility/enums/app-routings"
 import ChatCard from "components/Chat/ChatCard"
 import { useSocket } from "socket/socket"
-import { useAppDispatch, useAppSelector } from "hooks/storeHook"
+import { useAppSelector } from "hooks/storeHook"
 import { RootState } from "store/store"
 import { SOCKET_JOIN } from "socket/socketEventsConstants"
-import { resetChatState } from "store/slices/chatSlice"
-import { resetMessages } from "store/slices/messageSlice"
 import { CHATS_LABEL, HOME_LABEL } from "utility/constants/messages"
 import { useParams } from "react-router-dom"
 
@@ -28,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     border: "2px solid #f0f0f0",
     borderRadius: "8px",
     padding: "10px 8px 15px 15px",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       width: "100%",
     },
   },
@@ -41,21 +39,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Chats = () => {
   const classes = useStyles()
-  const params = useParams()
+  const { chatId } = useParams()
   const { emit } = useSocket()
-  const dispatch = useAppDispatch()
   const isMobileScreen = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down("sm")
+    theme.breakpoints.down("md")
   )
   const userDetails = useAppSelector((state: RootState) => state.user)
 
   useEffect(() => {
     emit(SOCKET_JOIN, userDetails._id)
-
-    return () => {
-      dispatch(resetChatState())
-      dispatch(resetMessages())
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -74,12 +66,12 @@ const Chats = () => {
     <Layout>
       <NavigatorTree navigators={navigators} />
       <Box className={classes.mainWrapper}>
-        {(isMobileScreen ? !params.id : true) && (
+        {(isMobileScreen ? !chatId : true) && (
           <Box className={classes.chatSidebarWrapper}>
             <ChatSidebar />
           </Box>
         )}
-        {(isMobileScreen ? params.id : true) && (
+        {(isMobileScreen ? chatId : true) && (
           <Box className={classes.singleChatWrapper}>
             <ChatCard />
           </Box>

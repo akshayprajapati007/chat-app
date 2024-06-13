@@ -2,7 +2,7 @@ import { Avatar, Box, Typography } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import { Theme } from "@mui/material/styles"
 import React, { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import clsx from "clsx"
 import { IChatList } from "utility/interfaces/chat"
 import { IUserDetails } from "utility/interfaces/common"
@@ -45,9 +45,9 @@ interface IChatUserCardProps {
 const ChatUserCard = ({ chatInfo }: IChatUserCardProps) => {
   const classes = useStyles()
   const navigate = useNavigate()
+  const { chatId } = useParams()
   const [userInfo, setUserInfo] = useState<IUserDetails>(DEFAULT_USER_INFO)
   const userDetails = useAppSelector((state: RootState) => state.user)
-  const { activeChat } = useAppSelector((state: RootState) => state.chat)
 
   useEffect(() => {
     if (userDetails && chatInfo) {
@@ -63,7 +63,7 @@ const ChatUserCard = ({ chatInfo }: IChatUserCardProps) => {
   return (
     <Box
       className={clsx(classes.mainWrapper, {
-        [classes.selectedChat]: chatInfo._id === activeChat._id,
+        [classes.selectedChat]: chatInfo._id === chatId,
       })}
       onClick={handleChatSelect}
     >

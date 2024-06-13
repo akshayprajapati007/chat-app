@@ -10,18 +10,10 @@ import { RootState } from "store/store"
 import { useAppDispatch, useAppSelector } from "hooks/storeHook"
 import { NO_CHAT_SELECTED_LABEL } from "utility/constants/messages"
 import CustomLoaderContainer from "components/CustomLoaderContainer"
-import { IChatList, IMessage } from "utility/interfaces/chat"
+import { IMessage } from "utility/interfaces/chat"
 import { updateMessages } from "store/slices/messageSlice"
 import { SOCKET_MESSAGE_RECEIVED } from "socket/socketEventsConstants"
 import { useSocket } from "socket/socket"
-import {
-  resetActiveChat,
-  setActiveChat,
-  setChatList,
-  setChatListLoader,
-} from "store/slices/chatSlice"
-import chatService from "services/chat-service"
-import { handleCatchError } from "utility/constants/helper"
 import { useParams } from "react-router-dom"
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -45,34 +37,14 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ChatCard = () => {
   const classes = useStyles()
   const { socket } = useSocket()
-  const routeParams = useParams()
+  const { chatId } = useParams()
   const dispatch = useAppDispatch()
-  const { chatListLoader, chatList, activeChat } = useAppSelector(
-    (state: RootState) => state.chat
-  )
-
-  useEffect(() => {
-    handleChatSelection()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routeParams, routeParams.id])
-
-  const handleChatSelection = () => {
-    if (routeParams && routeParams.id) {
-      const selectedChat = chatList.find(
-        (chat: IChatList) => chat._id === routeParams.id
-      )
-      if (selectedChat) dispatch(setActiveChat(selectedChat))
-    } else {
-      dispatch(resetActiveChat())
-    }
-  }
+  const { chatListLoader } = useAppSelector((state: RootState) => state.chat)
 
   useEffect(() => {
     const handleSocketMessageReceived = (newMessage: IMessage) => {
-      if (newMessage.chat === activeChat._id) {
+      if (newMessage.chat === chatId) {
         dispatch(updateMessages(newMessage))
-      } else if (chatList.length === 0) {
-        getChatsList(newMessage)
       }
     }
 
@@ -82,26 +54,12 @@ const ChatCard = () => {
       socket && socket.off(SOCKET_MESSAGE_RECEIVED, handleSocketMessageReceived)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeChat])
-
-  const getChatsList = async (newMessage: IMessage) => {
-    dispatch(setChatListLoader(true))
-    try {
-      const res = await chatService.getChatsList()
-      dispatch(setChatList(res.data.data))
-      dispatch(setActiveChat(res.data.data[0]))
-      dispatch(updateMessages(newMessage))
-    } catch (error: any) {
-      handleCatchError(error)
-    } finally {
-      dispatch(setChatListLoader(false))
-    }
-  }
+  }, [chatId])
 
   return (
     <Box className={classes.mainWrapper}>
       <CustomLoaderContainer isLoading={chatListLoader}>
-        {activeChat._id ? (
+        {chatId ? (
           <>
             <ChatCardUserInfo />
             <ChatCardMessages />

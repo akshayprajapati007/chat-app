@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Box, Typography } from "@mui/material"
 import { Theme } from "@mui/material/styles"
@@ -88,15 +88,24 @@ const validationSchema = Yup.object({
 
 const SignIn = () => {
   const classes = useStyles()
-  const { initializeSocket } = useSocket()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const { initializeSocket } = useSocket()
   const [isSigning, setIsSigning] = useState(false)
 
   const initialValues: ISignInValues = {
     email: "",
     password: "",
   }
+
+  useEffect(() => {
+    const isLoggedIn = AuthService.isCurrentSessionValid()
+    if (isLoggedIn) {
+      console.log("log in")
+      navigate(-1)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleLogin = async (values: ISignInValues) => {
     setIsSigning(true)

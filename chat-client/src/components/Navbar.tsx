@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useLayoutEffect } from "react"
 import {
   IconButton,
   AppBar,
@@ -7,10 +7,12 @@ import {
   Typography,
   Avatar,
   Hidden,
+  Box,
 } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import ExitToAppRoundedIcon from "@mui/icons-material/ExitToAppRounded"
-import { Link } from "react-router-dom"
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded"
+import { Link, useNavigate } from "react-router-dom"
 import authService from "services/auth-service"
 import { ChatIcon } from "assets/images"
 import { AppRoutings } from "utility/enums/app-routings"
@@ -26,6 +28,10 @@ import {
 } from "utility/constants/messages"
 
 const useStyles = makeStyles({
+  appBar: {
+    paddingLeft: "5px",
+    paddingRight: "5px",
+  },
   logoLink: {
     textDecoration: "none",
     color: "#fff",
@@ -37,20 +43,28 @@ const useStyles = makeStyles({
   profileInfoWrapper: {
     textDecoration: "none",
   },
+  searchIcon: {
+    color: "#fff",
+  },
 })
 
 const Navbar: () => JSX.Element = () => {
   const classes = useStyles()
+  const navigate = useNavigate()
   const userDetails = useAppSelector((state: RootState) => state.user)
 
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const { profileImage } = userDetails
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const isCurrentSessionValid = authService.isCurrentSessionValid()
     setIsLoggedIn(isCurrentSessionValid)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userDetails])
+
+  const handleSearchPageRedirect = () => {
+    navigate(AppRoutings.Search)
+  }
 
   const handleLogout = async () => {
     try {
@@ -62,10 +76,10 @@ const Navbar: () => JSX.Element = () => {
 
   return (
     <>
-      <AppBar position="sticky">
+      <AppBar position="sticky" className={classes.appBar}>
         <Toolbar>
           <Grid container alignItems="center">
-            <Grid item xs={3} sm={4} lg={3}>
+            <Grid item xs={3} sm={3} lg={3}>
               <Link to={AppRoutings.Home} className={classes.logoLink}>
                 <Typography variant="h6" marginX={0.5} marginY={0.8}>
                   {BRAND_LABEL}
@@ -75,17 +89,30 @@ const Navbar: () => JSX.Element = () => {
             {isLoggedIn && (
               <>
                 <Hidden smDown>
-                  <Grid item xs={4} sm={4} lg={6}>
-                    <SearchUserList />
+                  <Grid item sm={5} md={5} lg={6}>
+                    <Box display="flex" justifyContent="center">
+                      <SearchUserList />
+                    </Box>
                   </Grid>
                 </Hidden>
-                <Grid item xs={9} sm={4} lg={3}>
+                <Grid item xs={9} sm={4} md={4} lg={3}>
                   <Grid
                     container
                     spacing={{ xs: 2, md: 3 }}
                     alignItems="center"
                     justifyContent="flex-end"
                   >
+                    <Hidden smUp>
+                      <Grid item xs="auto">
+                        <IconButton
+                          size="medium"
+                          edge="end"
+                          onClick={handleSearchPageRedirect}
+                        >
+                          <SearchRoundedIcon className={classes.searchIcon} />
+                        </IconButton>
+                      </Grid>
+                    </Hidden>
                     <Grid item xs="auto">
                       <Link
                         title={PROFILE_LABEL}

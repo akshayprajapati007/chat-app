@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const ChatSidebar = () => {
   const classes = useStyles()
-  const routeParams = useParams()
+  const { chatId } = useParams()
   const dispatch = useAppDispatch()
   const [isStartNewChat, setIsStartNewChat] = useState(false)
   const { chatList } = useAppSelector((state: RootState) => state.chat)
@@ -58,7 +58,7 @@ const ChatSidebar = () => {
   useEffect(() => {
     setIsStartNewChat(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chatList, routeParams.id])
+  }, [chatList, chatId])
 
   const toggleStartNewChat = () => {
     setIsStartNewChat((isStartNewChat) => !isStartNewChat)

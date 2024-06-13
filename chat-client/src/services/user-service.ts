@@ -6,6 +6,7 @@ import {
   REMOVE_FRIEND_ENDPOINT,
   FRIENDS_ENDPOINT,
   FRIEND_REQUESTS_LIST_ENDPOINT,
+  GET_USER_BY_CHAT_ID_ENDPOINT,
 } from "configs"
 import httpClient from "services/base-service"
 import {
@@ -19,6 +20,13 @@ const getUserDetails = async (
   id: string
 ): Promise<AxiosResponse<IUserDetailsResponse>> => {
   const ENDPOINT = `${GET_USER_DETAILS_ENDPOINT}?id=${id}`
+  return await httpClient.get(ENDPOINT)
+}
+
+const getUserByChatId = async (
+  chatId: string
+): Promise<AxiosResponse<IUserDetailsResponse>> => {
+  const ENDPOINT = `${GET_USER_BY_CHAT_ID_ENDPOINT}/${chatId}`
   return await httpClient.get(ENDPOINT)
 }
 
@@ -65,6 +73,7 @@ const removeFriend = async (
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   getUserDetails,
+  getUserByChatId,
   searchUsers,
   friendRequest,
   removeFriend,
