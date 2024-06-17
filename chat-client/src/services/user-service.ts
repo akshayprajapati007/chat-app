@@ -7,6 +7,7 @@ import {
   FRIENDS_ENDPOINT,
   FRIEND_REQUESTS_LIST_ENDPOINT,
   GET_USER_BY_CHAT_ID_ENDPOINT,
+  GET_USER_PROFILE_META_DATA_ENDPOINT,
 } from "configs"
 import httpClient from "services/base-service"
 import {
@@ -14,6 +15,7 @@ import {
   IFriendRequestPayload,
   IUserDetailsResponse,
   IFriendsListResponse,
+  IProfileMetaDataResponse,
 } from "utility/interfaces/users"
 
 const getUserDetails = async (
@@ -57,6 +59,12 @@ const getFriendRequestsList = async (
   return await httpClient.get(ENDPOINT)
 }
 
+const getUserProfileMetaData = async (): Promise<
+  AxiosResponse<IProfileMetaDataResponse>
+> => {
+  return await httpClient.get(GET_USER_PROFILE_META_DATA_ENDPOINT)
+}
+
 const friendRequest = async (
   payload: IFriendRequestPayload
 ): Promise<AxiosResponse<IUserDetailsResponse>> => {
@@ -79,4 +87,5 @@ export default {
   removeFriend,
   getFriendsList,
   getFriendRequestsList,
+  getUserProfileMetaData,
 }

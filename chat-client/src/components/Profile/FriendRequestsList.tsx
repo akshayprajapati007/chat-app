@@ -7,8 +7,11 @@ import { EMPTY_FRIEND_REQUESTS_LIST_MESSAGE } from "utility/constants/messages"
 import ProfileList from "./ProfileList"
 import { FriendInfoCardTypes, FriendshipStatus } from "utility/enums/common"
 import { handleCatchError } from "utility/constants/helper"
+import { useAppDispatch } from "hooks/storeHook"
+import { setUserProfileFriendRequestCount } from "store/slices/userProfileSlice"
 
 const FriendRequestsList = () => {
+  const dispatch = useAppDispatch()
   const [loading, setLoading] = useState(false)
   const [friendRequestsList, setFriendRequestsList] = useState<IUserDetails[]>(
     []
@@ -16,6 +19,7 @@ const FriendRequestsList = () => {
 
   useEffect(() => {
     getFriendRequestsList()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const getFriendRequestsList = async () => {
@@ -23,6 +27,7 @@ const FriendRequestsList = () => {
     try {
       const res = await userService.getFriendRequestsList(1, 20, "")
       setFriendRequestsList(res.data.data)
+      dispatch(setUserProfileFriendRequestCount(res.data.data.length))
     } catch (error: any) {
       handleCatchError(error)
     } finally {

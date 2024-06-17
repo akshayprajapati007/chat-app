@@ -5,6 +5,7 @@ import thunk from "redux-thunk"
 import userReducer from "store/slices/userSlice"
 import chatReducer from "store/slices/chatSlice"
 import messageReducer from "store/slices/messageSlice"
+import userProfileSlice from "store/slices/userProfileSlice"
 import { IS_DEVELOPMENT_MODE } from "configs"
 
 const persistConfig = {
@@ -16,6 +17,7 @@ const persistedUserReducer = persistReducer(persistConfig, userReducer)
 
 const rootReducer = combineReducers({
   user: persistedUserReducer,
+  userProfile: userProfileSlice,
   chat: chatReducer,
   message: messageReducer,
 })

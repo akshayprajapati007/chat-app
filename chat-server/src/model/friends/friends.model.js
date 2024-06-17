@@ -84,6 +84,14 @@ const getFriendRequestsList = async (email, page, perPage) => {
   }
 }
 
+const getFriendRequestsCount = async (userId) => {
+  const totalFriendRequests = await friends.countDocuments({
+    receiver: userId,
+    status: "pending",
+  })
+  return totalFriendRequests
+}
+
 const createFriendRequest = async (senderId, recipientId) => {
   try {
     const request = {
@@ -184,4 +192,5 @@ module.exports = {
   acceptFriendRequest,
   rejectFriendRequest,
   removeFriend,
+  getFriendRequestsCount,
 }

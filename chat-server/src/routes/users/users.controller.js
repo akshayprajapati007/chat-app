@@ -12,6 +12,7 @@ const {
   removeFriend,
   getFriendsList,
   getFriendRequestsList,
+  getFriendRequestsCount,
 } = require("../../model/friends/friends.model")
 const FriendshipStatus = require("../../utility/friendship-status")
 const { findChatById } = require("../../model/chats/chats.model")
@@ -192,6 +193,26 @@ const getUserDetailsByChatId = async (req, res) => {
   }
 }
 
+const getUserProfileMetaData = async (req, res) => {
+  try {
+    const { _id } = req.user
+    const totalFriendRequests = await getFriendRequestsCount(_id)
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        totalFriendRequests,
+      },
+    })
+  } catch (err) {
+    console.log("error", err)
+    return res.status(500).json({
+      success: false,
+      data: err,
+    })
+  }
+}
+
 module.exports = {
   handleGetUserDetails,
   handleSearchUserByName,
@@ -200,4 +221,5 @@ module.exports = {
   friendsList,
   friendRequestsList,
   getUserDetailsByChatId,
+  getUserProfileMetaData,
 }

@@ -7,6 +7,7 @@ const AppRoutings = {
   UpdateProfileImage: "/update_profile_image",
   GetUserDetails: "/get_user_details",
   GetUserByChatId: "/get_user_by_chat_id/:chatId",
+  GetUserProfileMetaData: "/get_user_profile_meta_data",
   searchUsers: "/search_users",
   friends: "/friends",
   friendRequestsList: "/friend_requests_list",

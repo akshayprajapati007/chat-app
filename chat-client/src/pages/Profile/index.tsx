@@ -1,44 +1,26 @@
-import { useState, useRef } from "react"
-import { Box, Grid, Avatar, IconButton, CircularProgress } from "@mui/material"
+import { useEffect } from "react"
+import { Box } from "@mui/material"
 import { Theme } from "@mui/material/styles"
-import EditRoundedIcon from "@mui/icons-material/EditRounded"
 import { makeStyles } from "@mui/styles"
-import * as Yup from "yup"
-import { Formik, Form } from "formik"
-import { toast } from "react-toastify"
-import { isEqual } from "lodash"
-import CustomErrorMessage from "components/CustomErrorMessage"
-import TextField from "components/TextField"
-import Button from "components/Button"
-import profileService from "services/profile-service"
-import { IProfileValues } from "utility/interfaces/profile"
-import { useAppDispatch, useAppSelector } from "hooks/storeHook"
-import { changeUserDetails } from "store/slices/userSlice"
-import { RootState } from "store/store"
 import { AppRoutings } from "utility/enums/app-routings"
 import { INavigator } from "utility/interfaces/common"
 import NavigatorTree from "components/NavigatorTree"
-import {
-  ALLOWED_IMAGE_EXTENSIONS,
-  ALLOWED_IMAGE_TYPES,
-} from "utility/constants"
-import { fileToBase64, handleCatchError } from "utility/constants/helper"
 import Layout from "components/Layout"
 import CustomTabs from "components/CustomTabs"
 import {
-  ALLOWED_IMAGE_EXTENSIONS_MESSAGE,
-  EDIT_PROFILE_LABEL,
-  FIRST_NAME_REQUIRED_MESSAGE,
   FRIENDS_LABEL,
   FRIEND_REQUESTS_LABEL,
   HOME_LABEL,
-  LAST_NAME_REQUIRED_MESSAGE,
   PROFILE_LABEL,
-  SOMETHING_WENT_WRONG_MESSAGE,
-  UPDATE_PROFILE_LABEL,
 } from "utility/constants/messages"
 import FriendsList from "components/Profile/FriendsList"
 import FriendRequestsList from "components/Profile/FriendRequestsList"
+import ProfileInfo from "components/Profile/ProfileInfo"
+import userService from "services/user-service"
+import { handleCatchError } from "utility/constants/helper"
+import { useAppDispatch, useAppSelector } from "hooks/storeHook"
+import { setUserProfileMetaData } from "store/slices/userProfileSlice"
+import { RootState } from "store/store"
 
 const sharedWrapperStyles = {
   boxShadow: "0 2px 18px 4px rgba(176, 176, 176, 0.22)",
@@ -97,21 +79,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
-const validationSchema = Yup.object({
-  firstName: Yup.string().required(FIRST_NAME_REQUIRED_MESSAGE),
-  lastName: Yup.string().required(LAST_NAME_REQUIRED_MESSAGE),
-})
-
 const Profile = () => {
   const classes = useStyles()
-  const profileImageRef: any = useRef(null)
   const dispatch = useAppDispatch()
-  const { email, firstName, lastName, profileImage } = useAppSelector(
-    (state: RootState) => state.user
+  const { profileMetaData } = useAppSelector(
+    (state: RootState) => state.userProfile
   )
-  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
-  const [isEditingProfile, setIsEditingProfile] = useState(false)
-  const [isUpdatingProfileImage, setIsUpdatingProfileImage] = useState(false)
 
   const profileTabs = [
     {
@@ -119,15 +92,12 @@ const Profile = () => {
       tabPanel: <FriendsList />,
     },
     {
-      tabLabel: FRIEND_REQUESTS_LABEL,
+      tabLabel: `${FRIEND_REQUESTS_LABEL} ${
+        profileMetaData ? `(${profileMetaData.totalFriendRequests})` : ""
+      }`,
       tabPanel: <FriendRequestsList />,
     },
   ]
-
-  const initialValues: IProfileValues = {
-    firstName,
-    lastName,
-  }
 
   const navigators: INavigator[] = [
     {
@@ -140,184 +110,24 @@ const Profile = () => {
     },
   ]
 
-  const handleProfileEditClick = () => {
-    if (profileImageRef.current) {
-      profileImageRef.current.click()
-    }
-  }
+  useEffect(() => {
+    getProfileMetaData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { files } = e.target
-    if (files && files.length > 0) {
-      const { type } = files[0]
-      const fileExtension = type.split("/").pop()
-      const fileType = fileExtension ? fileExtension.toLowerCase() : ""
-
-      if (!ALLOWED_IMAGE_EXTENSIONS.includes(fileType)) {
-        toast.error(ALLOWED_IMAGE_EXTENSIONS_MESSAGE)
-        return
-      }
-
-      handleImageUpload(files)
-    } else toast.error(SOMETHING_WENT_WRONG_MESSAGE)
-  }
-
-  const handleImageUpload = async (files: FileList) => {
-    setIsUpdatingProfileImage(true)
+  const getProfileMetaData = async () => {
     try {
-      const base64Image = await fileToBase64(files[0])
-      const payload = {
-        profileImage: base64Image as string,
-      }
-
-      try {
-        const response = await profileService.updateProfileImage(payload)
-        const {
-          data: { data, message },
-        } = response
-        dispatch(changeUserDetails(data))
-        toast.success(message)
-      } catch (error: any) {
-        handleCatchError(error)
-      }
-    } catch (error) {
-      handleCatchError(error)
-    } finally {
-      setIsUpdatingProfileImage(false)
-    }
-  }
-
-  const handleProfileUpdateSubmit = (values: IProfileValues) => {
-    if (isEditingProfile) {
-      const isFieldUpdates = !isEqual(initialValues, values)
-      if (isFieldUpdates) {
-        handleProfileUpdate(values)
-      } else {
-        setIsEditingProfile(false)
-      }
-    } else {
-      setIsEditingProfile(true)
-    }
-  }
-
-  const handleProfileUpdate = async (values: IProfileValues) => {
-    setIsUpdatingProfile(true)
-    try {
-      const response = await profileService.updateProfile(values)
-      const {
-        data: { data, message },
-      } = response
-      dispatch(changeUserDetails(data))
-      toast.success(message)
+      const response = await userService.getUserProfileMetaData()
+      dispatch(setUserProfileMetaData(response.data.data))
     } catch (error: any) {
       handleCatchError(error)
-    } finally {
-      setIsUpdatingProfile(false)
-      setIsEditingProfile(false)
     }
   }
-
   return (
     <Layout>
       <NavigatorTree navigators={navigators} />
       <Box pt={15}>
-        <Formik
-          validateOnChange
-          validateOnBlur
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleProfileUpdateSubmit}
-        >
-          {({ values, handleChange, handleSubmit }) => (
-            <Form onSubmit={handleSubmit} className={classes.formWrapper}>
-              <Box className={classes.formBoxWrapper}>
-                <Box className={classes.profileImageWrapper}>
-                  <Box className={classes.profileImageChildWrapper}>
-                    <Avatar
-                      src={profileImage}
-                      sx={{ height: 120, width: 120, borderRadius: "50%" }}
-                    />
-                    <IconButton
-                      size="small"
-                      disabled={isUpdatingProfileImage}
-                      onClick={handleProfileEditClick}
-                    >
-                      {isUpdatingProfileImage ? (
-                        <CircularProgress
-                          size={15}
-                          className={classes.profileImageLoader}
-                        />
-                      ) : (
-                        <EditRoundedIcon />
-                      )}
-                    </IconButton>
-                    <input
-                      hidden
-                      type="file"
-                      accept={ALLOWED_IMAGE_TYPES}
-                      ref={profileImageRef}
-                      disabled={isUpdatingProfileImage}
-                      onChange={handleImageSelect}
-                    />
-                  </Box>
-                </Box>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
-                    <Box className={classes.fieldWrapper}>
-                      <TextField
-                        name="firstName"
-                        placeholder="First name"
-                        disabled={!isEditingProfile}
-                        value={values.firstName}
-                        onChange={handleChange}
-                      />
-                      <CustomErrorMessage name="firstName" />
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Box className={classes.fieldWrapper}>
-                      <TextField
-                        name="lastName"
-                        placeholder="Last name"
-                        disabled={!isEditingProfile}
-                        value={values.lastName}
-                        onChange={handleChange}
-                      />
-                      <CustomErrorMessage name="lastName" />
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Box className={classes.fieldWrapper}>
-                      <TextField
-                        disabled
-                        placeholder="Email"
-                        defaultValue={email}
-                      />
-                      <CustomErrorMessage name="email" />
-                    </Box>
-                  </Grid>
-                  <Grid container item xs={12}>
-                    <Grid item xs={12} sm={6} md={4} lg={3}>
-                      <Box pt={2}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          type="submit"
-                          disabled={isUpdatingProfile}
-                          isLoading={isUpdatingProfile}
-                        >
-                          {isEditingProfile
-                            ? UPDATE_PROFILE_LABEL
-                            : EDIT_PROFILE_LABEL}
-                        </Button>
-                      </Box>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Form>
-          )}
-        </Formik>
+        <ProfileInfo />
       </Box>
       <Box mt={5} pb={5} display="flex" justifyContent="center">
         <Box className={classes.friendsListWrapper}>

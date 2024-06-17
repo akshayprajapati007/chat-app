@@ -25,3 +25,12 @@ export interface IFriendsListResponse {
   succuss: boolean
   data: IUserDetails[]
 }
+
+export interface IProfileMetaData {
+  totalFriendRequests: number
+}
+
+export interface IProfileMetaDataResponse {
+  succuss: boolean
+  data: IProfileMetaData
+}
