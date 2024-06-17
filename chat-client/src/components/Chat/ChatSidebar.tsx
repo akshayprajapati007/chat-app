@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react"
-import { Box, IconButton, Tooltip, Typography } from "@mui/material"
+import {
+  Box,
+  IconButton,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import { Theme } from "@mui/material/styles"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import clsx from "clsx"
 import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded"
 import chatService from "services/chat-service"
@@ -17,6 +23,7 @@ import { handleCatchError } from "utility/constants/helper"
 import { RootState } from "store/store"
 import NewChat from "./NewChat"
 import ChatList from "./ChatList"
+import { AppRoutings } from "utility/enums/app-routings"
 
 const useStyles = makeStyles((theme: Theme) => ({
   chatHeadingWrapper: {
@@ -46,8 +53,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ChatSidebar = () => {
   const classes = useStyles()
   const { chatId } = useParams()
+  const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const [isStartNewChat, setIsStartNewChat] = useState(false)
+  const isMobileScreen = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down("md")
+  )
   const { chatList } = useAppSelector((state: RootState) => state.chat)
 
   useEffect(() => {
@@ -69,6 +80,9 @@ const ChatSidebar = () => {
     try {
       const res = await chatService.getChatsList()
       dispatch(setChatList(res.data.data))
+      if (!isMobileScreen && res.data.data.length > 0) {
+        navigate(`${AppRoutings.Chats}/${res.data.data[0]._id}`)
+      }
     } catch (error: any) {
       handleCatchError(error)
     } finally {

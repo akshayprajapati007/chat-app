@@ -37,7 +37,31 @@ const validateToken = async (req, res, next) => {
   }
 }
 
+const validateSocketToken = async (socket, next) => {
+  const token = socket.handshake.auth.token
+
+  if (!token) {
+    return next(new Error("User is not authenticated!"))
+  }
+
+  try {
+    const tokenData = verify(token, JWT_TOKEN_SECRET)
+    if (tokenData) {
+      const user = await findUserByEmail(tokenData.email)
+      if (!user) {
+        return next(new Error("User not found!"))
+      }
+      socket.user = user
+      socket.email = tokenData.email
+      return next()
+    }
+  } catch (err) {
+    return next(new Error("Invalid token!"))
+  }
+}
+
 module.exports = {
   generateToken,
   validateToken,
+  validateSocketToken,
 }

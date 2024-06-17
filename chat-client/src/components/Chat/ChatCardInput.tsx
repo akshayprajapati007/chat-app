@@ -10,7 +10,7 @@ import { RootState } from "store/store"
 import chatService from "services/chat-service"
 import { setMessages, updateMessages } from "store/slices/messageSlice"
 import { useSocket } from "socket/socket"
-import { SOCKET_MESSAGE } from "socket/socketEventsConstants"
+import { SOCKET_MESSAGE, SOCKET_TYPING } from "socket/socketEventsConstants"
 import { IMessage } from "utility/interfaces/chat"
 import { encryptMessage, handleCatchError } from "utility/constants/helper"
 import { useParams } from "react-router-dom"
@@ -54,6 +54,7 @@ const ChatCardInput = () => {
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value)
+    emit(SOCKET_TYPING, chatId)
   }
 
   const handleLocalUpdateMessage = (newMessage: IMessage) => {

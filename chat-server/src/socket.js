@@ -1,8 +1,7 @@
-const { findChatById } = require("./model/chats/chats.model")
-
-let connectedUsers = {}
+const { validateSocketToken } = require("./jwt")
 
 const setupSocket = (io) => {
+  io.use(validateSocketToken)
   io.on("connection", (socket) => {
     socket.on("join", (userId) => {
       socket.join(userId)
@@ -14,18 +13,30 @@ const setupSocket = (io) => {
     })
 
     socket.on("message", async (messageData) => {
-      const { chat, sender } = messageData
+      try {
+        const { chat } = messageData
 
-      const { users } = await findChatById(chat)
-
-      users.forEach((user) => {
-        if (user.toString() === sender) return
-        socket.in(user.toString()).emit("message received", messageData)
-      })
+        socket.to(chat).emit("message received", messageData)
+      } catch (error) {
+        console.error("Error handling message event:", error)
+      }
     })
 
-    socket.off("join", () => {
+    socket.on("typing", async (chatId, sender) => {
+      try {
+        socket.to(chatId).emit("user typing", sender)
+      } catch (error) {
+        console.error("Error handling typing event:", error)
+      }
+    })
+
+    socket.on("disconnect", () => {
+      console.log("Client disconnected")
+    })
+
+    socket.on("leave", (userId) => {
       socket.leave(userId)
+      console.log(`User ${userId} left their own room`)
     })
   })
 }

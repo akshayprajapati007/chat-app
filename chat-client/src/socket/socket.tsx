@@ -30,7 +30,9 @@ const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
   const initializeSocket = (token: string): Socket => {
     const newSocket = io(BASE_URL as string, {
-      query: { token },
+      auth: {
+        token,
+      },
     })
 
     setSocket(newSocket)

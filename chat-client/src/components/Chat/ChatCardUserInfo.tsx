@@ -18,6 +18,8 @@ import { DEFAULT_USER_INFO } from "utility/constants"
 import { AppRoutings } from "utility/enums/app-routings"
 import userService from "services/user-service"
 import { handleCatchError } from "utility/constants/helper"
+import { useSocket } from "socket/socket"
+import { SOCKET_USER_TYPING } from "socket/socketEventsConstants"
 
 const useStyles = makeStyles((theme: Theme) => ({
   linkTag: {
@@ -30,6 +32,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: "#f0f0f0",
     padding: "15px 10px",
     borderRadius: "8px",
+    height: "65px",
   },
   contentWrapper: {
     display: "flex",
@@ -37,13 +40,20 @@ const useStyles = makeStyles((theme: Theme) => ({
     gap: "10px",
     color: "#333",
   },
+  typingIndicator: {
+    color: "#888",
+    fontSize: "0.8rem !important",
+    lineHeight: "normal !important",
+  },
 }))
 
 const ChatCardUserInfo = () => {
   const classes = useStyles()
+  const { socket } = useSocket()
   const navigate = useNavigate()
   const { chatId } = useParams()
   const [isLoading, setIsLoading] = useState(false)
+  const [isTyping, setIsTyping] = useState(false)
   const [userInfo, setUserInfo] = useState<IUserDetails>(DEFAULT_USER_INFO)
   const userDetails = useAppSelector((state: RootState) => state.user)
 
@@ -57,6 +67,24 @@ const ChatCardUserInfo = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userDetails._id, chatId])
+
+  useEffect(() => {
+    let typingTimeout: NodeJS.Timeout
+
+    const handleSocketTyping = (_senderId: string) => {
+      setIsTyping(true)
+      clearTimeout(typingTimeout)
+      typingTimeout = setTimeout(() => setIsTyping(false), 700)
+    }
+
+    socket && socket.on(SOCKET_USER_TYPING, handleSocketTyping)
+
+    return () => {
+      socket && socket.off(SOCKET_USER_TYPING, handleSocketTyping)
+      clearTimeout(typingTimeout) // Clear timeout on cleanup
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatId, socket])
 
   const getUserDetails = async () => {
     try {
@@ -106,9 +134,18 @@ const ChatCardUserInfo = () => {
             {isLoading ? (
               <Skeleton variant="rounded" width={210} height={20} />
             ) : (
-              <Typography variant="h6">
-                {userInfo.firstName} {userInfo.lastName}
-              </Typography>
+              <>
+                <Typography variant="h6">
+                  {userInfo.firstName} {userInfo.lastName}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  hidden={!isTyping}
+                  className={classes.typingIndicator}
+                >
+                  Typing...
+                </Typography>
+              </>
             )}
           </Box>
         </Box>
