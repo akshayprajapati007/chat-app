@@ -7,6 +7,7 @@ const { findUserByEmail } = require("../../model/users/users.model")
 const handleGetMessages = async (req, res) => {
   try {
     const { chatId } = req.params
+    const { page, per } = req.query
     if (!chatId) {
       return res
         .status(400)
@@ -17,7 +18,7 @@ const handleGetMessages = async (req, res) => {
     const query = {
       chat: chatId,
     }
-    const messages = await getMessages(query)
+    const messages = await getMessages(query, page, per)
     return res.status(200).json({
       success: true,
       data: messages,

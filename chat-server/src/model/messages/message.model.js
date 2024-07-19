@@ -1,9 +1,21 @@
 const messages = require("./messages.mongo")
 
-const getMessages = async (query) => {
+const getMessages = async (query, page = 1, limit = 10) => {
   try {
-    const messagesList = await messages.find(query, "-__v")
-    return messagesList
+    const options = {
+      page,
+      limit,
+      select: "-__v",
+    }
+
+    const result = await messages.paginate(query, options)
+
+    return {
+      totalCount: result.totalDocs,
+      totalPages: result.totalPages,
+      currentPage: result.page,
+      messages: result.docs,
+    }
   } catch (error) {
     throw new Error(error)
   }

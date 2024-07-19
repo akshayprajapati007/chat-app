@@ -101,7 +101,7 @@ const createFriendRequest = async (senderId, recipientId) => {
     }
     const newRequest = new friends(request)
     await newRequest.save()
-    return user
+    return newRequest
   } catch (error) {
     return error
   }
