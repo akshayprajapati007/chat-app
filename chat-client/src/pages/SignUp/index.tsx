@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material"
 import * as Yup from "yup"
 import { Formik, Form } from "formik"
-import { useEffect, useState } from "react"
+import { useLayoutEffect, useState } from "react"
 import { makeStyles } from "@mui/styles"
 import { Theme } from "@mui/material/styles"
 import { Link, useNavigate } from "react-router-dom"
@@ -99,10 +99,10 @@ const SignUp = () => {
     password: "",
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const isLoggedIn = AuthService.isCurrentSessionValid()
     if (isLoggedIn) {
-      navigate(-1)
+      navigate(AppRoutings.Home)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

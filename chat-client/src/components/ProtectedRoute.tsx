@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import authService from "services/auth-service"
 import { AppRoutings } from "utility/enums/app-routings"
 import { IS_DEVELOPMENT_MODE, LOGIN_URL } from "configs"
+import { CALLBACK_LABEL } from "utility/constants/messages"
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -14,9 +15,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   const redirectToTheSignInScreen = (): void => {
     if (IS_DEVELOPMENT_MODE) {
-      navigate(AppRoutings.SignIn)
+      navigate(
+        `${AppRoutings.SignIn}?${CALLBACK_LABEL}=${window.location.pathname}`
+      )
     } else {
-      window.location.href = LOGIN_URL as string
+      window.location.href =
+        `${LOGIN_URL}?${CALLBACK_LABEL}=${window.location.pathname}` as string
     }
   }
 

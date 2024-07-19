@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useLayoutEffect, useState } from "react"
+import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { Box, Typography } from "@mui/material"
 import { Theme } from "@mui/material/styles"
 import { makeStyles } from "@mui/styles"
@@ -17,6 +17,7 @@ import { changeUserDetails } from "store/slices/userSlice"
 import { handleCatchError } from "utility/constants/helper"
 import { BRAND_LABEL } from "utility/constants"
 import {
+  CALLBACK_LABEL,
   DO_NOT_HAVE_AN_ACCOUNT_MESSAGE,
   EMAIL_NOT_VERIFIED_MESSAGE,
   EMAIL_REQUIRED_MESSAGE,
@@ -91,6 +92,7 @@ const SignIn = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { initializeSocket } = useSocket()
+  const [searchParams] = useSearchParams()
   const [isSigning, setIsSigning] = useState(false)
 
   const initialValues: ISignInValues = {
@@ -98,11 +100,10 @@ const SignIn = () => {
     password: "",
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const isLoggedIn = AuthService.isCurrentSessionValid()
     if (isLoggedIn) {
-      console.log("log in")
-      navigate(-1)
+      navigate(AppRoutings.Home)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -115,7 +116,8 @@ const SignIn = () => {
       initializeSocket(authToken)
       AuthService.setAuthToken(authToken)
       dispatch(changeUserDetails(res.data.data))
-      navigate(AppRoutings.Home)
+      const redirectUrl = searchParams.get(CALLBACK_LABEL)
+      navigate(redirectUrl || AppRoutings.Home)
     } catch (error: any) {
       if (
         error.response.data.error &&
@@ -165,6 +167,7 @@ const SignIn = () => {
                   <TextField
                     type="password"
                     name="password"
+                    autoComplete="on"
                     placeholder="Password"
                     value={values.password}
                     onChange={handleChange}

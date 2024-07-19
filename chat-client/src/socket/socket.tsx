@@ -4,19 +4,17 @@ import {
   useContext,
   useEffect,
   useState,
+  useCallback,
 } from "react"
 import io, { Socket } from "socket.io-client"
 import { BASE_URL } from "configs"
-
-// export const socketIo = io(BASE_URL as string, {
-//   query: { token: "" },
-// })
 
 interface SocketContextProps {
   socket: Socket | null
   emit: (event: string, data?: any) => void
   initializeSocket: (token: string) => Socket
   disconnectSocket: () => void
+  removeEventListener: (event: string) => void
 }
 
 const SocketContext = createContext<SocketContextProps | undefined>(undefined)
@@ -28,7 +26,11 @@ interface SocketProviderProps {
 const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null)
 
-  const initializeSocket = (token: string): Socket => {
+  const initializeSocket = useCallback((token: string): Socket => {
+    if (!token) {
+      throw new Error("Token must be provided to initialize socket connection")
+    }
+
     const newSocket = io(BASE_URL as string, {
       auth: {
         token,
@@ -45,35 +47,43 @@ const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       console.log("Socket disconnected")
     })
 
-    // Add other event listeners or configurations as needed
-
     return newSocket
-  }
+  }, [])
 
-  const disconnectSocket = () => {
+  const disconnectSocket = useCallback(() => {
     if (socket) {
+      socket.off()
       socket.disconnect()
+      setSocket(null)
     }
-  }
+  }, [socket])
 
-  const emit = (event: string, data?: any) => {
-    if (socket) {
-      socket.emit(event, data)
-    }
-  }
+  const removeEventListener = useCallback(
+    (event: string) => {
+      socket?.off(event)
+    },
+    [socket]
+  )
+
+  const emit = useCallback(
+    (event: string, data?: any) => {
+      socket?.emit(event, data)
+    },
+    [socket]
+  )
 
   useEffect(() => {
     return () => {
       disconnectSocket()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socket])
+  }, [disconnectSocket])
 
   const contextValue: SocketContextProps = {
     socket,
     emit,
     initializeSocket,
     disconnectSocket,
+    removeEventListener,
   }
 
   return (

@@ -22,9 +22,12 @@ const accessChat = async (recipientId: string): Promise<AxiosResponse<any>> => {
 }
 
 const getMessages = async (
-  chatId: string
+  chatId: string,
+  query?: string
 ): Promise<AxiosResponse<IMessagesResponse>> => {
-  const ENDPOINT = `${GET_MESSAGES_ENDPOINT}/${chatId}`
+  const ENDPOINT = `${GET_MESSAGES_ENDPOINT}/${chatId}${
+    query ? `?${query}` : ""
+  }`
   return await httpClient.get(ENDPOINT)
 }
 

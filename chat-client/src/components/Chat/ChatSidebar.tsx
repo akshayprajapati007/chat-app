@@ -80,7 +80,7 @@ const ChatSidebar = () => {
     try {
       const res = await chatService.getChatsList()
       dispatch(setChatList(res.data.data))
-      if (!isMobileScreen && res.data.data.length > 0) {
+      if (!isMobileScreen && !chatId && res.data.data.length > 0) {
         navigate(`${AppRoutings.Chats}/${res.data.data[0]._id}`)
       }
     } catch (error: any) {

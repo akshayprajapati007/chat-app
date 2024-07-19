@@ -28,6 +28,12 @@ export const UPDATE_PROFILE_LABEL = "Update Profile"
 export const EDIT_PROFILE_LABEL = "Edit Profile"
 export const NO_RESULT_FOUND_LABEL = "No result found"
 export const CANCEL_LABEL = "Cancel"
+export const CALLBACK_LABEL = "callback"
+export const DAY_LABEL = "day"
+export const DAYS_LABEL = "days"
+export const TODAY_LABEL = "Today"
+export const YESTERDAY_LABEL = "Yesterday"
+export const YEAR_LABEL = "year"
 
 export const EMPTY_FRIENDS_LIST_MESSAGE = "You don't have any friends yet!"
 export const EMPTY_FRIEND_REQUESTS_LIST_MESSAGE =

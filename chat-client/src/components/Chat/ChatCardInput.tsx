@@ -2,7 +2,9 @@ import { useEffect, useState } from "react"
 import { Box, InputAdornment, IconButton } from "@mui/material"
 import { makeStyles } from "@mui/styles"
 import { Theme } from "@mui/material/styles"
+import { v4 as uuidv4 } from "uuid"
 import clsx from "clsx"
+import { useParams } from "react-router-dom"
 import TextField from "components/TextField"
 import SendIcon from "@mui/icons-material/SendRounded"
 import { useAppDispatch, useAppSelector } from "hooks/storeHook"
@@ -13,7 +15,6 @@ import { useSocket } from "socket/socket"
 import { SOCKET_MESSAGE, SOCKET_TYPING } from "socket/socketEventsConstants"
 import { IMessage } from "utility/interfaces/chat"
 import { encryptMessage, handleCatchError } from "utility/constants/helper"
-import { useParams } from "react-router-dom"
 
 const useStyles = makeStyles((theme: Theme) => ({
   mainWrapper: {
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const ChatCardInput = () => {
   const classes = useStyles()
-  const { emit } = useSocket()
+  const { emit, removeEventListener } = useSocket()
   const { chatId } = useParams()
   const dispatch = useAppDispatch()
   const [message, setMessage] = useState("")
@@ -52,6 +53,12 @@ const ChatCardInput = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tempMessage])
 
+  useEffect(() => {
+    return () => {
+      removeEventListener(SOCKET_TYPING)
+    }
+  }, [removeEventListener])
+
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value)
     emit(SOCKET_TYPING, chatId)
@@ -63,16 +70,18 @@ const ChatCardInput = () => {
   }
 
   const handleMessageSend = async () => {
+    if (!message.trim()) return
+
     try {
       const encryptedMessage = encryptMessage(message)
 
-      const optimisticMessageId = Date.now().toString()
-      const optimisticMessage = {
+      const optimisticMessageId = uuidv4()
+      const optimisticMessage: IMessage = {
         _id: optimisticMessageId,
         message: encryptedMessage,
         sender: userDetails._id,
-        createdAt: optimisticMessageId,
-        updatedAt: optimisticMessageId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         chat: chatId as string,
       }
       handleLocalUpdateMessage(optimisticMessage)
@@ -107,10 +116,10 @@ const ChatCardInput = () => {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton type="submit" disabled={!message}>
+                  <IconButton type="submit" disabled={!message.trim()}>
                     <SendIcon
                       className={clsx(classes.sendIcon, {
-                        [classes.activeSendIcon]: message,
+                        [classes.activeSendIcon]: message.trim(),
                       })}
                       fontSize="small"
                     />

@@ -34,5 +34,10 @@ export interface IMessageResponse {
 
 export interface IMessagesResponse {
   success: boolean
-  data: IMessage[]
+  data: {
+    messages: IMessage[]
+    totalCount: number
+    totalPages: number
+    currentPage: number
+  }
 }
