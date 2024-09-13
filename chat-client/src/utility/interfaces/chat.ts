@@ -15,6 +15,7 @@ export interface IMessage {
   updatedAt: string
   message: string
   chat: string
+  seen: boolean
 }
 
 export interface IChatListResponse {

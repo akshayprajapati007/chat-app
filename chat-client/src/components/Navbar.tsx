@@ -26,6 +26,7 @@ import {
   LOGOUT_LABEL,
   PROFILE_LABEL,
 } from "utility/constants/messages"
+import CustomActionsDialog from "./CustomActionsDialog"
 
 const useStyles = makeStyles({
   appBar: {
@@ -54,6 +55,7 @@ const Navbar: () => JSX.Element = () => {
   const userDetails = useAppSelector((state: RootState) => state.user)
 
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLogoutDialog, setIsLogoutDialog] = useState(false)
   const { profileImage } = userDetails
 
   useLayoutEffect(() => {
@@ -64,6 +66,14 @@ const Navbar: () => JSX.Element = () => {
 
   const handleSearchPageRedirect = () => {
     navigate(AppRoutings.Search)
+  }
+
+  const openLogoutConfirmation = () => {
+    setIsLogoutDialog(true)
+  }
+
+  const closeLogoutConfirmation = () => {
+    setIsLogoutDialog(false)
   }
 
   const handleLogout = async () => {
@@ -145,7 +155,7 @@ const Navbar: () => JSX.Element = () => {
                         size="medium"
                         edge="end"
                         sx={{ color: "#fff" }}
-                        onClick={handleLogout}
+                        onClick={openLogoutConfirmation}
                       >
                         <ExitToAppRoundedIcon />
                       </IconButton>
@@ -157,6 +167,14 @@ const Navbar: () => JSX.Element = () => {
           </Grid>
         </Toolbar>
       </AppBar>
+
+      <CustomActionsDialog
+        title="Logout"
+        content="Are you sure want to log out?"
+        isOpen={isLogoutDialog}
+        handleClose={closeLogoutConfirmation}
+        actionButtonClick={handleLogout}
+      />
     </>
   )
 }

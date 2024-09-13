@@ -53,7 +53,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: "#f7f7f7",
     fontWeight: "500 !important",
     color: theme.palette.grey[800],
-    boxShadow: "rgba(149, 157, 165, 0.2) 0px 2px 4px",
     wordBreak: "break-word",
     maxWidth: "85%",
     fontFamily: "'Montserrat', sans-serif",
@@ -106,6 +105,8 @@ const ChatCardMessages = () => {
   const { chatId } = useParams()
   const { emit } = useSocket()
   const dispatch = useAppDispatch()
+  const observer = useRef<IntersectionObserver | null>(null)
+  const observedMessages = useRef(new Set())
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
@@ -165,6 +166,56 @@ const ChatCardMessages = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages.length, totalPages])
 
+  useEffect(() => {
+    if (!messageContainerRef.current) return
+
+    if (!observer.current) {
+      observer.current = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const messageId = entry.target.getAttribute("data-id")
+            if (messageId && !observedMessages.current.has(messageId)) {
+              console.log("here", messageId)
+              observedMessages.current.add(messageId)
+            }
+          }
+        })
+      })
+    }
+
+    const messageContainer = messageContainerRef.current
+    const messageElements = messageContainer.querySelectorAll(".message")
+
+    messageElements.forEach((el) => {
+      const messageId = el.getAttribute("data-id")
+      if (messageId && !observedMessages.current.has(messageId)) {
+        observer.current && observer.current.observe(el)
+      }
+    })
+
+    const mutationObserver = new MutationObserver(() => {
+      const newMessageElements = messageContainer.querySelectorAll(".message")
+      newMessageElements.forEach((el) => {
+        const messageId = el.getAttribute("data-id")
+        if (messageId && !observedMessages.current.has(messageId)) {
+          observer.current && observer.current.observe(el)
+        }
+      })
+    })
+
+    mutationObserver.observe(messageContainer, {
+      childList: true,
+      subtree: true,
+    })
+
+    return () => {
+      if (observer.current) {
+        observer.current.disconnect()
+      }
+      mutationObserver.disconnect()
+    }
+  }, [messages])
+
   const handleGetMessages = () => {
     if (chatId) {
       getMessages()
@@ -188,11 +239,8 @@ const ChatCardMessages = () => {
         },
       } = response
       setTotalPages(totalPages)
-      if (isFirstPage) {
-        dispatch(setMessages(currentMessages))
-      } else {
-        dispatch(setMessages([...currentMessages, ...messages]))
-      }
+      messagesDate = ""
+      dispatch(setMessages([...currentMessages, ...messages]))
     } catch (error: any) {
       handleCatchError(error)
     } finally {
@@ -244,7 +292,7 @@ const ChatCardMessages = () => {
               }
 
               return (
-                <div key={_id}>
+                <div key={_id} data-id={_id} className="message">
                   {displayDate && (
                     <Box className={classes.messageSeparatorWrapper}>
                       <Box className={classes.messageSeparator} />

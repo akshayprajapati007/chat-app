@@ -32,7 +32,7 @@ const useStyles = makeStyles({
     color: "#000",
     width: "100%",
     maxHeight: "250px",
-    borderRadius: "20px",
+    borderRadius: "30px",
     overflow: "hidden",
     backgroundColor: "#fff",
     zIndex: 1,

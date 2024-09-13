@@ -83,6 +83,7 @@ const ChatCardInput = () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         chat: chatId as string,
+        seen: false,
       }
       handleLocalUpdateMessage(optimisticMessage)
       setTempMessageId(optimisticMessageId)

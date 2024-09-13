@@ -76,6 +76,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-end",
+    gap: "5px",
     "& > p": {
       color: "#818181",
       fontWeight: "500 !important",
@@ -84,9 +85,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     "& > button": {
       backgroundColor: "transparent",
       padding: "3px 10px",
-      minHeight: "0px",
+      height: "auto",
       color: theme.palette.primary.main,
       width: "fit-content",
+      boxShadow: "none",
+      lineHeight: "normal",
       "&:hover": {
         backgroundColor: "rgba(0,0,0,0.04)",
       },
@@ -219,6 +222,7 @@ const AccountVerification = () => {
                       <Typography>{`00:${resendBtnTime}`}</Typography>
                     )}
                     <Button
+                      variant="text"
                       isLoading={isSendingOTP}
                       disabled={isSendingOTP || resendBtnTime > 0}
                       onClick={handleSendOTP}
