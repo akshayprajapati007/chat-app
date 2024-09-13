@@ -31,7 +31,7 @@ const updateProfileImage = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: "Profile image updated successfully",
+      message: "Profile photo updated successfully",
       data: {
         email,
         firstName,

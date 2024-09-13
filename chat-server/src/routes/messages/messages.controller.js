@@ -39,6 +39,7 @@ const handleMessageSave = async (req, res) => {
       chat: chatId,
       message,
       sender: _id,
+      seen: false,
     }
     const chat = await saveMessage(newMessage)
     return res.status(200).json({
